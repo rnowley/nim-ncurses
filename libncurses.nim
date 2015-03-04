@@ -9,7 +9,7 @@ else:
   const 
     libncurses* = "libncurses.so.5.9"
 type 
-  chtype* = cuint
+  chtype* = char
   mmask_t* = cuint
   attr_t* = chtype
 
@@ -73,7 +73,11 @@ proc addstr*(a2: cstring): cint {.cdecl, importc: "addstr", dynlib: libncurses.}
 proc endwin*(): cint {.cdecl, importc: "endwin", dynlib: libncurses.}
 # implemented 
 
-proc getch*(): cint {.cdecl, importc: "getch", dynlib: libncurses.}
+proc getch*(): char {.cdecl, importc: "getch", dynlib: libncurses.}
+# generated 
+
+proc getnstr*(a2: cstring; a3: cint): cint {.cdecl, importc: "getnstr", 
+    dynlib: libncurses.}
 # generated 
 
 proc getstr*(a2: cstring): cint {.cdecl, importc: "getstr", dynlib: libncurses.}
