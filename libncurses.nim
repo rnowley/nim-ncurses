@@ -64,8 +64,39 @@ type
     color*: cint              # current color-pair for non-space character 
   
 
+var curscr* {.importc: "curscr", dynlib: libncurses.}: ptr WINDOW
+
+var newscr* {.importc: "newscr", dynlib: libncurses.}: ptr WINDOW
+
+var stdscr* {.importc: "stdscr", dynlib: libncurses.}: ptr WINDOW
+
+var ttytype* {.importc: "ttytype", dynlib: libncurses.}: ptr char
+
+var COLORS* {.importc: "COLORS", dynlib: libncurses.}: cint
+
+var COLOR_PAIRS* {.importc: "COLOR_PAIRS", dynlib: libncurses.}: cint
+
+var COLS* {.importc: "COLS", dynlib: libncurses.}: cint
+
+var ESCDELAY* {.importc: "ESCDELAY", dynlib: libncurses.}: cint
+
+var LINES* {.importc: "LINES", dynlib: libncurses.}: cint
+
+var TABSIZE* {.importc: "TABSIZE", dynlib: libncurses.}: cint
+
+# colors 
+
 const 
-  NCURSES_ATTR_T* = int
+  COLOR_BLACK* = 0
+  COLOR_RED* = 1
+  COLOR_GREEN* = 2
+  COLOR_YELLOW* = 3
+  COLOR_BLUE* = 4
+  COLOR_MAGENTA* = 5
+  COLOR_CYAN* = 6
+  COLOR_WHITE* = 7
+  ERR* = (- 1)
+  OK* = (0)
 
 template NCURSES_CAST*(`type`, value: expr): expr = 
   (`type`)(value)
@@ -75,6 +106,17 @@ const
 
 template NCURSES_BITS*(mask, shift: expr): expr = 
   (NCURSES_CAST(int, (mask)) shl ((shift) + NCURSES_ATTR_SHIFT))
+
+#
+#  These apply to the first 256 color pairs.
+# 
+
+template COLOR_PAIR*(n: expr): expr = 
+  NCURSES_BITS((n), 0)
+
+template PAIR_NUMBER*(a: expr): expr = 
+  (NCURSES_CAST(int, ((NCURSES_CAST(unsigned, long, (a)) and A_COLOR) shr
+      NCURSES_ATTR_SHIFT)))
 
 const 
   A_NORMAL* = (1 - 1)
@@ -103,17 +145,21 @@ proc addch*(a2: chtype): cint {.cdecl, importc: "addch", dynlib: libncurses.}
 proc addstr*(a2: cstring): cint {.cdecl, importc: "addstr", dynlib: libncurses.}
 # generated 
 
-proc attroff*(a2: cint): cint {.cdecl, importc: "attroff", 
-    dynlib: libncurses.}
+proc attroff*(a2: cint): cint {.cdecl, importc: "attroff", dynlib: libncurses.}
 # generated 
 
-proc attron*(a2: cint): cint {.cdecl, importc: "attron", 
-    dynlib: libncurses.}
+proc attron*(a2: cint): cint {.cdecl, importc: "attron", dynlib: libncurses.}
 # generated 
 
-proc attrset*(a2: cint): cint {.cdecl, importc: "attrset", 
-    dynlib: libncurses.}
+proc attrset*(a2: cint): cint {.cdecl, importc: "attrset", dynlib: libncurses.}
 # generated 
+
+proc bkgd*(a2: cint): cint {.cdecl, importc: "bkgd", dynlib: libncurses.}
+# generated 
+
+proc can_change_color*(): bool {.cdecl, importc: "can_change_color", 
+                                 dynlib: libncurses.}
+# implemented 
 
 proc endwin*(): cint {.cdecl, importc: "endwin", dynlib: libncurses.}
 # implemented 
@@ -127,6 +173,17 @@ proc getnstr*(a2: cstring; a3: cint): cint {.cdecl, importc: "getnstr",
 
 proc getstr*(a2: cstring): cint {.cdecl, importc: "getstr", dynlib: libncurses.}
 # generated 
+
+proc has_colors*(): bool {.cdecl, importc: "has_colors", dynlib: libncurses.}
+# implemented 
+
+proc init_color*(a2: cshort; a3: cshort; a4: cshort; a5: cshort): cint {.cdecl, 
+    importc: "init_color", dynlib: libncurses.}
+# implemented 
+
+proc init_pair*(a2: cshort; a3: cshort; a4: cshort): cint {.cdecl, 
+    importc: "init_pair", dynlib: libncurses.}
+# implemented 
 
 proc initscr*(): ptr WINDOW {.cdecl, importc: "initscr", dynlib: libncurses.}
 # implemented 
@@ -147,4 +204,7 @@ proc refresh*(): cint {.cdecl, importc: "refresh", dynlib: libncurses.}
 
 proc scanw*(a2: cstring): cint {.varargs, cdecl, importc: "scanw", 
                                  dynlib: libncurses.}
+# implemented 
+
+proc start_color*(): cint {.cdecl, importc: "start_color", dynlib: libncurses.}
 # implemented 
