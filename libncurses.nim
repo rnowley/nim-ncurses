@@ -64,10 +64,55 @@ type
     color*: cint              # current color-pair for non-space character 
   
 
+const 
+  NCURSES_ATTR_T* = int
+
+template NCURSES_CAST*(`type`, value: expr): expr = 
+  (`type`)(value)
+
+const 
+  NCURSES_ATTR_SHIFT* = 8
+
+template NCURSES_BITS*(mask, shift: expr): expr = 
+  (NCURSES_CAST(int, (mask)) shl ((shift) + NCURSES_ATTR_SHIFT))
+
+const 
+  A_NORMAL* = (1 - 1)
+  A_ATTRIBUTES* = NCURSES_BITS(not (1 - 1), 0)
+  A_CHARTEXT* = (NCURSES_BITS(1, 0) - 1)
+  A_COLOR* = NCURSES_BITS(((1) shl 8) - 1, 0)
+  A_STANDOUT* = NCURSES_BITS(1, 8)
+  A_UNDERLINE* = NCURSES_BITS(1, 9)
+  A_REVERSE* = NCURSES_BITS(1, 10)
+  A_BLINK* = NCURSES_BITS(1, 11)
+  A_DIM* = NCURSES_BITS(1, 12)
+  A_BOLD* = NCURSES_BITS(1, 13)
+  A_ALTCHARSET* = NCURSES_BITS(1, 14)
+  A_INVIS* = NCURSES_BITS(1, 15)
+  A_PROTECT* = NCURSES_BITS(1, 16)
+  A_HORIZONTAL* = NCURSES_BITS(1, 17)
+  A_LEFT* = NCURSES_BITS(1, 18)
+  A_LOW* = NCURSES_BITS(1, 19)
+  A_RIGHT* = NCURSES_BITS(1, 20)
+  A_TOP* = NCURSES_BITS(1, 21)
+  A_VERTICAL* = NCURSES_BITS(1, 22)
+
 proc addch*(a2: chtype): cint {.cdecl, importc: "addch", dynlib: libncurses.}
 # generated 
 
 proc addstr*(a2: cstring): cint {.cdecl, importc: "addstr", dynlib: libncurses.}
+# generated 
+
+proc attroff*(a2: cint): cint {.cdecl, importc: "attroff", 
+    dynlib: libncurses.}
+# generated 
+
+proc attron*(a2: cint): cint {.cdecl, importc: "attron", 
+    dynlib: libncurses.}
+# generated 
+
+proc attrset*(a2: cint): cint {.cdecl, importc: "attrset", 
+    dynlib: libncurses.}
 # generated 
 
 proc endwin*(): cint {.cdecl, importc: "endwin", dynlib: libncurses.}
@@ -99,3 +144,7 @@ proc printw*(a2: cstring): cint {.varargs, cdecl, importc: "printw",
 
 proc refresh*(): cint {.cdecl, importc: "refresh", dynlib: libncurses.}
 # generated 
+
+proc scanw*(a2: cstring): cint {.varargs, cdecl, importc: "scanw", 
+                                 dynlib: libncurses.}
+# implemented 
