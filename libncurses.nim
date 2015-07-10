@@ -345,4 +345,7 @@ proc wrefresh*(a2: ptr WINDOW): cint {.cdecl, importc: "wrefresh",
 
 proc wscanw*(a2: ptr WINDOW; a3: cstring): cint {.varargs, cdecl, 
     importc: "wscanw", dynlib: libncurses.}
-# implemented 
+# implemented
+
+proc cbreak*(): cint {.cdecl, importc: "cbreak", dynlib: libncurses}
+# implemented
