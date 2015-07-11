@@ -60,9 +60,13 @@ type
     parent*: ptr WINDOW       # pointer to parent if a sub-window 
                               # these are used only if this is a pad 
     pad*: pdat_18314018518274554323
-    yoffset*: cshort          # real begy is _begy + _yoffset 
-    color*: cint              # current color-pair for non-space character 
-  
+    yoffset*: cshort          # real begy is _begy + _yoffset
+    color*: cint              # current color-pair for non-space character
+
+  mevent* = object
+    id*: cshort               # ID to distinguish multiple devices
+    x*, y*, z*: cint          # event coordinates (character-cell)
+    bstate*: mmask_t          # button state bits
 
 const 
   ERR* = (- 1)
@@ -80,9 +84,50 @@ const
   COLOR_CYAN* = 6
   COLOR_WHITE* = 7
 
-# attributes 
+# mouse events
 
-template NCURSES_CAST*(`type`, value: expr): expr = 
+template NCURSES_MOUSE_MASK*(b: expr, m: expr): int =
+  m shl (((b) - 1) * 6)
+
+const
+  KEY_MOUSE*               = 0o631 # Mouse event has occurred
+  REPORT_MOUSE_POSITION*   = NCURSES_MOUSE_MASK(5, 0o10)
+  ALL_MOUSE_EVENTS*        = (REPORT_MOUSE_POSITION - 1)
+
+  NCURSES_BUTTON_RELEASED* = 0o01
+  NCURSES_BUTTON_PRESSED*  = 0o02
+  NCURSES_BUTTON_CLICKED*  = 0o04
+  NCURSES_DOUBLE_CLICKED*  = 0o10
+  NCURSES_TRIPLE_CLICKED*  = 0o20
+  NCURSES_RESERVED_EVENT*  = 0o40
+
+  BUTTON1_RELEASED*        = NCURSES_MOUSE_MASK(1, NCURSES_BUTTON_RELEASED)
+  BUTTON1_PRESSED*         = NCURSES_MOUSE_MASK(1, NCURSES_BUTTON_PRESSED)
+  BUTTON1_CLICKED*         = NCURSES_MOUSE_MASK(1, NCURSES_BUTTON_CLICKED)
+  BUTTON1_DOUBLE_CLICKED*  = NCURSES_MOUSE_MASK(1, NCURSES_DOUBLE_CLICKED)
+  BUTTON1_TRIPLE_CLICKED*  = NCURSES_MOUSE_MASK(1, NCURSES_TRIPLE_CLICKED)
+
+  BUTTON2_RELEASED*        = NCURSES_MOUSE_MASK(2, NCURSES_BUTTON_RELEASED)
+  BUTTON2_PRESSED*         = NCURSES_MOUSE_MASK(2, NCURSES_BUTTON_PRESSED)
+  BUTTON2_CLICKED*         = NCURSES_MOUSE_MASK(2, NCURSES_BUTTON_CLICKED)
+  BUTTON2_DOUBLE_CLICKED*  = NCURSES_MOUSE_MASK(2, NCURSES_DOUBLE_CLICKED)
+  BUTTON2_TRIPLE_CLICKED*  = NCURSES_MOUSE_MASK(2, NCURSES_TRIPLE_CLICKED)
+
+  BUTTON3_RELEASED*        = NCURSES_MOUSE_MASK(3, NCURSES_BUTTON_RELEASED)
+  BUTTON3_PRESSED*         = NCURSES_MOUSE_MASK(3, NCURSES_BUTTON_PRESSED)
+  BUTTON3_CLICKED*         = NCURSES_MOUSE_MASK(3, NCURSES_BUTTON_CLICKED)
+  BUTTON3_DOUBLE_CLICKED*  = NCURSES_MOUSE_MASK(3, NCURSES_DOUBLE_CLICKED)
+  BUTTON3_TRIPLE_CLICKED*  = NCURSES_MOUSE_MASK(3, NCURSES_TRIPLE_CLICKED)
+
+  BUTTON4_RELEASED*        = NCURSES_MOUSE_MASK(4, NCURSES_BUTTON_RELEASED)
+  BUTTON4_PRESSED*         = NCURSES_MOUSE_MASK(4, NCURSES_BUTTON_PRESSED)
+  BUTTON4_CLICKED*         = NCURSES_MOUSE_MASK(4, NCURSES_BUTTON_CLICKED)
+  BUTTON4_DOUBLE_CLICKED*  = NCURSES_MOUSE_MASK(4, NCURSES_DOUBLE_CLICKED)
+  BUTTON4_TRIPLE_CLICKED*  = NCURSES_MOUSE_MASK(4, NCURSES_TRIPLE_CLICKED)
+
+# attributes
+
+template NCURSES_CAST*(`type`, value: expr): expr =
   (`type`)(value)
 
 const 
@@ -348,4 +393,12 @@ proc wscanw*(a2: ptr WINDOW; a3: cstring): cint {.varargs, cdecl,
 # implemented
 
 proc cbreak*(): cint {.cdecl, importc: "cbreak", dynlib: libncurses}
+
+proc mousemask*(newmask: mmask_t, oldmask: ptr mmask_t): mmask_t {.cdecl, importc: "mousemask", dynlib: libncurses.}
+# implemented
+
+proc getmouse*(event: ptr mevent): cint {.cdecl, importc: "getmouse", dynlib: libncurses.}
+# implemented
+
+proc keypad*(win: ptr WINDOW, b: bool): cint {.cdecl, importc: "keypad", dynlib: libncurses.}
 # implemented
