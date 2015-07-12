@@ -1,25 +1,25 @@
  {.deadCodeElim: on.}
-when defined(windows): 
-  const 
+when defined(windows):
+  const
     libncurses* = "libncurses.dll"
-elif defined(macosx): 
-  const 
+elif defined(macosx):
+  const
     libncurses* = "libncurses.dylib"
-else: 
-  const 
+else:
+  const
     libncurses* = "libncurses.so.5.9"
-type 
+type
   chtype* = char
   mmask_t* = cuint
   attr_t* = chtype
 
-# ...must be at least as wide as chtype 
+# ...must be at least as wide as chtype
 
-type 
+type
   WINDOW* = win_st
-  ldat* = object 
-  
-  pdat_18314018518274554323* = object 
+  ldat* = object
+
+  pdat_18314018518274554323* = object
     pad_y*: cshort
     pad_x*: cshort
     pad_top*: cshort
@@ -27,38 +27,38 @@ type
     pad_bottom*: cshort
     pad_right*: cshort
 
-  win_st* = object 
+  win_st* = object
     cury*: cshort
-    curx*: cshort             # current cursor position 
-                              # window location and size 
+    curx*: cshort             # current cursor position
+                              # window location and size
     maxy*: cshort
-    maxx*: cshort             # maximums of x and y, NOT window size 
+    maxx*: cshort             # maximums of x and y, NOT window size
     begy*: cshort
-    begx*: cshort             # screen coords of upper-left-hand corner 
-    flags*: cshort            # window state flags 
-                              # attribute tracking 
-    attrs*: attr_t            # current attribute for non-space character 
-    bkgd*: chtype             # current background char/attribute pair 
-                              # option values set by user 
-    notimeout*: bool          # no time out on function-key entry? 
-    clear*: bool              # consider all data in the window invalid? 
-    leaveok*: bool            # OK to not reset cursor on exit? 
-    scroll*: bool             # OK to scroll this window? 
-    idlok*: bool              # OK to use insert/delete line? 
-    idcok*: bool              # OK to use insert/delete char? 
-    immed*: bool              # window in immed mode? (not yet used) 
-    sync*: bool               # window in sync mode? 
-    use_keypad*: bool         # process function keys into KEY_ symbols? 
-    delay*: cint              # 0 = nodelay, <0 = blocking, >0 = delay 
-    line*: ptr ldat           # the actual line data 
-                              # global screen state 
-    regtop*: cshort           # top line of scrolling region 
-    regbottom*: cshort        # bottom line of scrolling region 
-                              # these are used only if this is a sub-window 
-    parx*: cint               # x coordinate of this window in parent 
-    pary*: cint               # y coordinate of this window in parent 
-    parent*: ptr WINDOW       # pointer to parent if a sub-window 
-                              # these are used only if this is a pad 
+    begx*: cshort             # screen coords of upper-left-hand corner
+    flags*: cshort            # window state flags
+                              # attribute tracking
+    attrs*: attr_t            # current attribute for non-space character
+    bkgd*: chtype             # current background char/attribute pair
+                              # option values set by user
+    notimeout*: bool          # no time out on function-key entry?
+    clear*: bool              # consider all data in the window invalid?
+    leaveok*: bool            # OK to not reset cursor on exit?
+    scroll*: bool             # OK to scroll this window?
+    idlok*: bool              # OK to use insert/delete line?
+    idcok*: bool              # OK to use insert/delete char?
+    immed*: bool              # window in immed mode? (not yet used)
+    sync*: bool               # window in sync mode?
+    use_keypad*: bool         # process function keys into KEY_ symbols?
+    delay*: cint              # 0 = nodelay, <0 = blocking, >0 = delay
+    line*: ptr ldat           # the actual line data
+                              # global screen state
+    regtop*: cshort           # top line of scrolling region
+    regbottom*: cshort        # bottom line of scrolling region
+                              # these are used only if this is a sub-window
+    parx*: cint               # x coordinate of this window in parent
+    pary*: cint               # y coordinate of this window in parent
+    parent*: ptr WINDOW       # pointer to parent if a sub-window
+                              # these are used only if this is a pad
     pad*: pdat_18314018518274554323
     yoffset*: cshort          # real begy is _begy + _yoffset
     color*: cint              # current color-pair for non-space character
@@ -68,13 +68,13 @@ type
     x*, y*, z*: cint          # event coordinates (character-cell)
     bstate*: mmask_t          # button state bits
 
-const 
+const
   ERR* = (- 1)
   OK* = (0)
 
-# colors 
+# colors
 
-const 
+const
   COLOR_BLACK* = 0
   COLOR_RED* = 1
   COLOR_GREEN* = 2
@@ -130,13 +130,13 @@ const
 template NCURSES_CAST*(`type`, value: expr): expr =
   (`type`)(value)
 
-const 
+const
   NCURSES_ATTR_SHIFT* = 8
 
-template NCURSES_BITS*(mask, shift: expr): expr = 
+template NCURSES_BITS*(mask, shift: expr): expr =
   (NCURSES_CAST(chtype, (mask)) shl ((shift) + NCURSES_ATTR_SHIFT))
 
-const 
+const
   A_NORMAL* = 0
   A_BOLD* = 2097152
   A_UNDERLINE* = 131072
@@ -176,220 +176,223 @@ var LINES* {.importc: "LINES", dynlib: libncurses.}: cint
 
 var TABSIZE* {.importc: "TABSIZE", dynlib: libncurses.}: cint
 
-proc getcurx*(a2: ptr WINDOW): cint {.cdecl, importc: "getcurx", 
+proc getcurx*(a2: ptr WINDOW): cint {.cdecl, importc: "getcurx",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
-proc getcury*(a2: ptr WINDOW): cint {.cdecl, importc: "getcury", 
+proc getcury*(a2: ptr WINDOW): cint {.cdecl, importc: "getcury",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
-proc getbegx*(a2: ptr WINDOW): cint {.cdecl, importc: "getbegx", 
+proc getbegx*(a2: ptr WINDOW): cint {.cdecl, importc: "getbegx",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
-proc getbegy*(a2: ptr WINDOW): cint {.cdecl, importc: "getbegy", 
+proc getbegy*(a2: ptr WINDOW): cint {.cdecl, importc: "getbegy",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
-proc getmaxx*(a2: ptr WINDOW): cint {.cdecl, importc: "getmaxx", 
+proc getmaxx*(a2: ptr WINDOW): cint {.cdecl, importc: "getmaxx",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
-proc getmaxy*(a2: ptr WINDOW): cint {.cdecl, importc: "getmaxy", 
+proc getmaxy*(a2: ptr WINDOW): cint {.cdecl, importc: "getmaxy",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
-proc getparx*(a2: ptr WINDOW): cint {.cdecl, importc: "getparx", 
+proc getparx*(a2: ptr WINDOW): cint {.cdecl, importc: "getparx",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
-proc getpary*(a2: ptr WINDOW): cint {.cdecl, importc: "getpary", 
+proc getpary*(a2: ptr WINDOW): cint {.cdecl, importc: "getpary",
                                       dynlib: libncurses.}
-# generated 
+# generated
 
 proc addch*(a2: chtype): cint {.cdecl, importc: "addch", dynlib: libncurses.}
-# generated 
+# generated
 
 proc addstr*(a2: cstring): cint {.cdecl, importc: "addstr", dynlib: libncurses.}
-# generated 
+# generated
 
 proc attroff*(a2: cint): cint {.cdecl, importc: "attroff", dynlib: libncurses.}
-# generated 
+# generated
 
 proc attron*(a2: cint): cint {.cdecl, importc: "attron", dynlib: libncurses.}
-# generated 
+# generated
 
 proc attrset*(a2: cint): cint {.cdecl, importc: "attrset", dynlib: libncurses.}
-# generated 
+# generated
 
 proc bkgd*(a2: chtype): cint {.cdecl, importc: "bkgd", dynlib: libncurses.}
-proc can_change_color*(): bool {.cdecl, importc: "can_change_color", 
+proc can_change_color*(): bool {.cdecl, importc: "can_change_color",
                                  dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc clear*(): cint {.cdecl, importc: "clear", dynlib: libncurses.}
-# generated 
+# generated
 
 proc clrtobot*(): cint {.cdecl, importc: "clrtobot", dynlib: libncurses.}
-# generated 
+# generated
 
 proc clrtoeol*(): cint {.cdecl, importc: "clrtoeol", dynlib: libncurses.}
-# generated 
+# generated
 
-proc COLOR_PAIR*(a2: cint): cint {.cdecl, importc: "COLOR_PAIR", 
+proc COLOR_PAIR*(a2: cint): cint {.cdecl, importc: "COLOR_PAIR",
                                    dynlib: libncurses.}
-# generated 
+# generated
 
 proc echo*(): cint {.cdecl, importc: "echo", dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc endwin*(): cint {.cdecl, importc: "endwin", dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc erase*(): cint {.cdecl, importc: "erase", dynlib: libncurses.}
-# generated 
+# generated
 
 proc flushinp*(): cint {.cdecl, importc: "flushinp", dynlib: libncurses.}
 proc getch*(): char {.cdecl, importc: "getch", dynlib: libncurses.}
-# generated 
+# generated
 
-proc getnstr*(a2: cstring; a3: cint): cint {.cdecl, importc: "getnstr", 
+proc getnstr*(a2: cstring; a3: cint): cint {.cdecl, importc: "getnstr",
     dynlib: libncurses.}
-# generated 
+# generated
 
 proc getstr*(a2: cstring): cint {.cdecl, importc: "getstr", dynlib: libncurses.}
-# generated 
+# generated
 
 proc has_colors*(): bool {.cdecl, importc: "has_colors", dynlib: libncurses.}
-proc init_color*(a2: cshort; a3: cshort; a4: cshort; a5: cshort): cint {.cdecl, 
+proc init_color*(a2: cshort; a3: cshort; a4: cshort; a5: cshort): cint {.cdecl,
     importc: "init_color", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc init_pair*(a2: cshort; a3: cshort; a4: cshort): cint {.cdecl, 
+proc init_pair*(a2: cshort; a3: cshort; a4: cshort): cint {.cdecl,
     importc: "init_pair", dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc initscr*(): ptr WINDOW {.cdecl, importc: "initscr", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc move*(a2: cint; a3: cint): cint {.cdecl, importc: "move", 
+proc move*(a2: cint; a3: cint): cint {.cdecl, importc: "move",
                                        dynlib: libncurses.}
-# generated 
+# generated
 
-proc mvaddch*(a2: cint; a3: cint; a4: chtype): cint {.cdecl, importc: "mvaddch", 
+proc mvaddch*(a2: cint; a3: cint; a4: chtype): cint {.cdecl, importc: "mvaddch",
     dynlib: libncurses.}
-# generated 
+# generated
 
-proc mvaddchnstr*(a2: cint; a3: cint; a4: ptr chtype; a5: cint): cint {.cdecl, 
+proc mvaddchnstr*(a2: cint; a3: cint; a4: ptr chtype; a5: cint): cint {.cdecl,
     importc: "mvaddchnstr", dynlib: libncurses.}
-# generated 
+# generated
 
-proc mvaddchstr*(a2: cint; a3: cint; a4: ptr chtype): cint {.cdecl, 
+proc mvaddchstr*(a2: cint; a3: cint; a4: ptr chtype): cint {.cdecl,
     importc: "mvaddchstr", dynlib: libncurses.}
-# generated 
+# generated
 
-proc mvaddnstr*(a2: cint; a3: cint; a4: cstring; a5: cint): cint {.cdecl, 
+proc mvaddnstr*(a2: cint; a3: cint; a4: cstring; a5: cint): cint {.cdecl,
     importc: "mvaddnstr", dynlib: libncurses.}
-# generated 
+# generated
 
-proc mvaddstr*(a2: cint; a3: cint; a4: cstring): cint {.cdecl, 
+proc mvaddstr*(a2: cint; a3: cint; a4: cstring): cint {.cdecl,
     importc: "mvaddstr", dynlib: libncurses.}
-# generated 
+# generated
 
 proc napms*(a2: cint): cint {.cdecl, importc: "napms", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc newwin*(a2: cint; a3: cint; a4: cint; a5: cint): ptr WINDOW {.cdecl, 
+proc newwin*(a2: cint; a3: cint; a4: cint; a5: cint): ptr WINDOW {.cdecl,
     importc: "newwin", dynlib: libncurses.}
-proc nodelay*(a2: ptr WINDOW; a3: bool): cint {.cdecl, importc: "nodelay", 
+proc nodelay*(a2: ptr WINDOW; a3: bool): cint {.cdecl, importc: "nodelay",
     dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc noecho*(): cint {.cdecl, importc: "noecho", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc printw*(a2: cstring): cint {.varargs, cdecl, importc: "printw", 
+proc printw*(a2: cstring): cint {.varargs, cdecl, importc: "printw",
                                   dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc refresh*(): cint {.cdecl, importc: "refresh", dynlib: libncurses.}
-# generated 
+# generated
 
-proc scanw*(a2: cstring): cint {.varargs, cdecl, importc: "scanw", 
+proc scanw*(a2: cstring): cint {.varargs, cdecl, importc: "scanw",
                                  dynlib: libncurses.}
 proc start_color*(): cint {.cdecl, importc: "start_color", dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc ungetch*(a2: cint): cint {.cdecl, importc: "ungetch", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc waddch*(a2: ptr WINDOW; a3: chtype): cint {.cdecl, importc: "waddch", 
+proc waddch*(a2: ptr WINDOW; a3: chtype): cint {.cdecl, importc: "waddch",
     dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc waddchnstr*(a2: ptr WINDOW; a3: ptr chtype; a4: cint): cint {.cdecl, 
+proc waddchnstr*(a2: ptr WINDOW; a3: ptr chtype; a4: cint): cint {.cdecl,
     importc: "waddchnstr", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc waddchstr*(a2: ptr WINDOW; a3: ptr chtype): cint {.cdecl, 
+proc waddchstr*(a2: ptr WINDOW; a3: ptr chtype): cint {.cdecl,
     importc: "waddchstr", dynlib: libncurses.}
-# generated 
+# generated
 
-proc waddnstr*(a2: ptr WINDOW; a3: cstring; a4: cint): cint {.cdecl, 
+proc waddnstr*(a2: ptr WINDOW; a3: cstring; a4: cint): cint {.cdecl,
     importc: "waddnstr", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc waddstr*(a2: ptr WINDOW; a3: cstring): cint {.cdecl, importc: "waddstr", 
+proc waddstr*(a2: ptr WINDOW; a3: cstring): cint {.cdecl, importc: "waddstr",
     dynlib: libncurses.}
-# generated 
+# generated
 
-proc wattron*(a2: ptr WINDOW; a3: cint): cint {.cdecl, importc: "wattron", 
+proc wattron*(a2: ptr WINDOW; a3: cint): cint {.cdecl, importc: "wattron",
     dynlib: libncurses.}
-# generated 
+# generated
 
-proc wattroff*(a2: ptr WINDOW; a3: cint): cint {.cdecl, importc: "wattroff", 
+proc wattroff*(a2: ptr WINDOW; a3: cint): cint {.cdecl, importc: "wattroff",
     dynlib: libncurses.}
-# generated 
+# generated
 
-proc wattrset*(a2: ptr WINDOW; a3: cint): cint {.cdecl, importc: "wattrset", 
+proc wattrset*(a2: ptr WINDOW; a3: cint): cint {.cdecl, importc: "wattrset",
     dynlib: libncurses.}
-# generated 
+# generated
 
 proc wattr_get*(a2: ptr WINDOW; a3: ptr attr_t; a4: ptr cshort; a5: pointer): cint {.
     cdecl, importc: "wattr_get", dynlib: libncurses.}
-# generated 
+# generated
 
-proc wattr_on*(a2: ptr WINDOW; a3: attr_t; a4: pointer): cint {.cdecl, 
+proc wattr_on*(a2: ptr WINDOW; a3: attr_t; a4: pointer): cint {.cdecl,
     importc: "wattr_on", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc wattr_off*(a2: ptr WINDOW; a3: attr_t; a4: pointer): cint {.cdecl, 
+proc wattr_off*(a2: ptr WINDOW; a3: attr_t; a4: pointer): cint {.cdecl,
     importc: "wattr_off", dynlib: libncurses.}
-# implemented 
+# implemented
 
 proc wattr_set*(a2: ptr WINDOW; a3: attr_t; a4: cshort; a5: pointer): cint {.
     cdecl, importc: "wattr_set", dynlib: libncurses.}
-# generated 
+# generated
 
-proc wbkgd*(a2: ptr WINDOW; a3: chtype): cint {.cdecl, importc: "wbkgd", 
+proc wbkgd*(a2: ptr WINDOW; a3: chtype): cint {.cdecl, importc: "wbkgd",
     dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc wgetch*(a2: ptr WINDOW): cint {.cdecl, importc: "wgetch", 
+proc wgetch*(a2: ptr WINDOW): cint {.cdecl, importc: "wgetch",
                                      dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc wprintw*(a2: ptr WINDOW; a3: cstring): cint {.varargs, cdecl, 
+proc wprintw*(a2: ptr WINDOW; a3: cstring): cint {.varargs, cdecl,
     importc: "wprintw", dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc wrefresh*(a2: ptr WINDOW): cint {.cdecl, importc: "wrefresh", 
+proc wrefresh*(a2: ptr WINDOW): cint {.cdecl, importc: "wrefresh",
                                        dynlib: libncurses.}
-# implemented 
+# implemented
 
-proc wscanw*(a2: ptr WINDOW; a3: cstring): cint {.varargs, cdecl, 
+proc wscanw*(a2: ptr WINDOW; a3: cstring): cint {.varargs, cdecl,
     importc: "wscanw", dynlib: libncurses.}
+# implemented
+
+proc cbreak*(): cint {.cdecl, importc: "cbreak", dynlib: libncurses}
 # implemented
 
 proc mousemask*(newmask: mmask_t, oldmask: ptr mmask_t): mmask_t {.cdecl, importc: "mousemask", dynlib: libncurses.}
