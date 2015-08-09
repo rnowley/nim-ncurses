@@ -273,6 +273,12 @@ proc can_change_color*(): bool {.cdecl, importc: "can_change_color", dynlib: lib
     ## @Returns: true if the terminal supports colours and can change their definitions or
     ## false otherwise.
 
+proc cbreak*(): int {.cdecl, discardable, importc: "cbreak", dynlib: libncurses.}
+    ## The cbreak routine disables line buffering and erase/kill character-processing
+    ## (interrupt and flow control characters are unaffected), making characters typed by
+    ## the user immediately available to the program.
+    ## @Returns: ERR on failure and OK upon successful completion.
+
 proc delch*(): int {.cdecl, discardable, importc: "delch", dynlib: libncurses.}
     ## Delete the character under the cursor in the stdscr.
     ## @Returns: ERR on failure and OK upon successfully flashing.
@@ -280,7 +286,7 @@ proc delch*(): int {.cdecl, discardable, importc: "delch", dynlib: libncurses.}
 proc deleteln*(): int {.cdecl, discardable, importc: "deleteln", dynlib: libncurses.}
     ## Deletes the line under the cursor in the stdscr. All lines below the current line are moved up one line.
     ## The bottom line of the window is cleared and the cursor position does not change.
-    ## @Returns: ERR on failure and OK upon successfully flashing.
+    ## @Returns: ERR on failure and OK upon successful completion.
 
 proc endwin*(): int {.cdecl, discardable, importc: "endwin", dynlib: libncurses.}
     ## A program should always call endwin before exiting or escaping from curses mode temporarily. This routine
@@ -376,6 +382,10 @@ proc mvwprintw*(destinationWindow: ptr window; y: int; x: int; formattedString: 
 proc napms*(milliseconds: int): int {.cdecl, discardable, importc: "napms", dynlib: libncurses.}
     ## Used to sleep for the specified milliseconds.
     ## @Params: 'milliseconds' the number of milliseconds to sleep for.
+    ## @Returns: ERR on failure and OK upon successful completion.
+
+proc nocbreak*(): int {.cdecl, discardable, importc: "nocbreak", dynlib: libncurses.}
+    ## Returns the terminal to normal (cooked mode).
     ## @Returns: ERR on failure and OK upon successful completion.
 
 proc printw*(formattedString: cstring): int {.varargs, cdecl, discardable, importc: "printw", dynlib: libncurses.}

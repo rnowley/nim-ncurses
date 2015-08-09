@@ -1407,6 +1407,8 @@ dt pre > span.Operator ~ span.Identifier, dt pre > span.Operator ~ span.Operator
     title="bkgd*(background: int64): int"><wbr />bkgd</a></li>
   <li><a class="reference" href="#can_change_color,"
     title="can_change_color*(): bool"><wbr />can_<wbr />change_<wbr />color</a></li>
+  <li><a class="reference" href="#cbreak,"
+    title="cbreak*(): int"><wbr />cbreak</a></li>
   <li><a class="reference" href="#delch,"
     title="delch*(): int"><wbr />delch</a></li>
   <li><a class="reference" href="#deleteln,"
@@ -1444,6 +1446,8 @@ dt pre > span.Operator ~ span.Identifier, dt pre > span.Operator ~ span.Operator
            formattedString: cstring): int"><wbr />mvwprintw</a></li>
   <li><a class="reference" href="#napms,int"
     title="napms*(milliseconds: int): int"><wbr />napms</a></li>
+  <li><a class="reference" href="#nocbreak,"
+    title="nocbreak*(): int"><wbr />nocbreak</a></li>
   <li><a class="reference" href="#printw,cstring"
     title="printw*(formattedString: cstring): int"><wbr />printw</a></li>
   <li><a class="reference" href="#refresh,"
@@ -2075,6 +2079,11 @@ Sets the background property of the current window and apply this setting to eve
 Used to determine if the terminal supports colours and can change their definitions. @Returns: true if the terminal supports colours and can change their definitions or false otherwise.
 
 </dd>
+<dt id="cbreak"><a name="cbreak,"></a><pre><span class="Keyword">proc</span> <span class="Identifier">cbreak</span><span class="Operator">*</span><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">{.</span><span class="Identifier">cdecl</span><span class="Other">,</span> <span class="Identifier">discardable</span><span class="Other">,</span> <span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;cbreak&quot;</span><span class="Other">,</span> <span class="Identifier">dynlib</span><span class="Other">:</span> <span class="Identifier">libncurses</span><span class="Other">.}</span></pre></dt>
+<dd>
+The cbreak routine disables line buffering and erase/kill character-processing (interrupt and flow control characters are unaffected), making characters typed by the user immediately available to the program. @Returns: ERR on failure and OK upon successful completion.
+
+</dd>
 <dt id="delch"><a name="delch,"></a><pre><span class="Keyword">proc</span> <span class="Identifier">delch</span><span class="Operator">*</span><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">{.</span><span class="Identifier">cdecl</span><span class="Other">,</span> <span class="Identifier">discardable</span><span class="Other">,</span> <span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;delch&quot;</span><span class="Other">,</span> <span class="Identifier">dynlib</span><span class="Other">:</span> <span class="Identifier">libncurses</span><span class="Other">.}</span></pre></dt>
 <dd>
 Delete the character under the cursor in the stdscr. @Returns: ERR on failure and OK upon successfully flashing.
@@ -2083,7 +2092,7 @@ Delete the character under the cursor in the stdscr. @Returns: ERR on failure an
 <dt id="deleteln"><a name="deleteln,"></a><pre><span class="Keyword">proc</span> <span class="Identifier">deleteln</span><span class="Operator">*</span><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">{.</span><span class="Identifier">cdecl</span><span class="Other">,</span> <span class="Identifier">discardable</span><span class="Other">,</span> <span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;deleteln&quot;</span><span class="Other">,</span> 
                         <span class="Identifier">dynlib</span><span class="Other">:</span> <span class="Identifier">libncurses</span><span class="Other">.}</span></pre></dt>
 <dd>
-Deletes the line under the cursor in the stdscr. All lines below the current line are moved up one line. The bottom line of the window is cleared and the cursor position does not change. @Returns: ERR on failure and OK upon successfully flashing.
+Deletes the line under the cursor in the stdscr. All lines below the current line are moved up one line. The bottom line of the window is cleared and the cursor position does not change. @Returns: ERR on failure and OK upon successful completion.
 
 </dd>
 <dt id="endwin"><a name="endwin,"></a><pre><span class="Keyword">proc</span> <span class="Identifier">endwin</span><span class="Operator">*</span><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">{.</span><span class="Identifier">cdecl</span><span class="Other">,</span> <span class="Identifier">discardable</span><span class="Other">,</span> <span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;endwin&quot;</span><span class="Other">,</span> <span class="Identifier">dynlib</span><span class="Other">:</span> <span class="Identifier">libncurses</span><span class="Other">.}</span></pre></dt>
@@ -2177,6 +2186,12 @@ Prints out a formatted string to the specified window at the specified row and c
                                       <span class="Identifier">dynlib</span><span class="Other">:</span> <span class="Identifier">libncurses</span><span class="Other">.}</span></pre></dt>
 <dd>
 Used to sleep for the specified milliseconds. @Params: 'milliseconds' the number of milliseconds to sleep for. @Returns: ERR on failure and OK upon successful completion.
+
+</dd>
+<dt id="nocbreak"><a name="nocbreak,"></a><pre><span class="Keyword">proc</span> <span class="Identifier">nocbreak</span><span class="Operator">*</span><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">{.</span><span class="Identifier">cdecl</span><span class="Other">,</span> <span class="Identifier">discardable</span><span class="Other">,</span> <span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;nocbreak&quot;</span><span class="Other">,</span> 
+                        <span class="Identifier">dynlib</span><span class="Other">:</span> <span class="Identifier">libncurses</span><span class="Other">.}</span></pre></dt>
+<dd>
+Returns the terminal to normal (cooked mode). @Returns: ERR on failure and OK upon successful completion.
 
 </dd>
 <dt id="printw"><a name="printw,cstring"></a><pre><span class="Keyword">proc</span> <span class="Identifier">printw</span><span class="Operator">*</span><span class="Other">(</span><span class="Identifier">formattedString</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">{.</span><span class="Identifier">varargs</span><span class="Other">,</span> <span class="Identifier">cdecl</span><span class="Other">,</span> <span class="Identifier">discardable</span><span class="Other">,</span> 
@@ -2295,7 +2310,7 @@ Reads the logical cursor location from the specified window. @Param: 'win' the w
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small>Made with Nim. Generated: 2015-08-09 22:28:24 UTC</small>
+        <small>Made with Nim. Generated: 2015-08-09 22:45:14 UTC</small>
       </div>
     </div>
   </div>
