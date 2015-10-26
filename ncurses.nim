@@ -7,7 +7,7 @@ elif defined(macosx):
    libncurses* = "libncurses.dylib"
 else:
  const
-   libncurses* = "libncurses.so.5.9"
+   libncurses* = "libncursesw.so"
 type
  chtype* = int64
  mmask_t* = uint32
@@ -229,6 +229,21 @@ proc getmaxx*(a2: ptr window): int {.cdecl, discardable, importc: "getmaxx", dyn
 proc getmaxy*(a2: ptr window): int {.cdecl, discardable, importc: "getmaxy", dynlib: libncurses.}
 proc getparx*(a2: ptr window): int {.cdecl, discardable, importc: "getparx", dynlib: libncurses.}
 proc getpary*(a2: ptr window): int {.cdecl, discardable, importc: "getpary", dynlib: libncurses.}
+
+
+proc box*(a2: ptr window, x, y: int64): int {.cdecl, discardable, importc: "box", dynlib: libncurses.}
+
+proc raw*(): int {.cdecl, discardable, importc: "raw", dynlib: libncurses.}
+
+proc noecho*(): int {.cdecl, discardable, importc: "noecho", dynlib: libncurses.}
+
+proc onecho*(): int {.cdecl, discardable, importc: "echo", dynlib: libncurses.}
+
+proc use_default_colors*(): int {.cdecl, discardable, importc: "use_default_colors", dynlib: libncurses.}
+
+proc curs_set*(visibility: int): int {.cdecl, discardable, importc: "curs_set", dynlib: libncurses.}
+
+proc clear*(): int {.cdecl, discardable, importc: "clear", dynlib: libncurses.}
 
 proc addch*(character: chtype): int {.cdecl, discardable, importc: "addch", dynlib: libncurses.}
     ## Puts a character into the stdscr at its current window position and then advances
