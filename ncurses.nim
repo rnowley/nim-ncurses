@@ -235,6 +235,8 @@ proc box*(a2: ptr window, x, y: int64): int {.cdecl, discardable, importc: "box"
 
 proc raw*(): int {.cdecl, discardable, importc: "raw", dynlib: libncurses.}
 
+proc timeout*(delay: cint) {.cdecl, discardable, importc: "timeout", dynlib: libncurses.}
+
 proc noecho*(): int {.cdecl, discardable, importc: "noecho", dynlib: libncurses.}
 
 proc onecho*(): int {.cdecl, discardable, importc: "echo", dynlib: libncurses.}
