@@ -230,6 +230,33 @@ proc getmaxy*(a2: ptr window): int {.cdecl, discardable, importc: "getmaxy", dyn
 proc getparx*(a2: ptr window): int {.cdecl, discardable, importc: "getparx", dynlib: libncurses.}
 proc getpary*(a2: ptr window): int {.cdecl, discardable, importc: "getpary", dynlib: libncurses.}
 
+proc newwin*(lines, columns, begin_y, begin_x: int): ptr window {.cdecl, discardable, importc: "newwin", dynlib: libncurses.}
+
+proc delwin*(win: ptr window): int {.cdecl, discardable, importc: "delwin", dynlib: libncurses.}
+
+proc mvwin*(win: ptr window, y, x: int): int {.cdecl, discardable, importc: "mvwin", dynlib: libncurses.}
+
+proc subwin*(orig: ptr window, lines, columns, begin_y, begin_x: int): int {.cdecl, discardable, importc: "subwin", dynlib: libncurses.}
+
+proc keypad*(win: ptr window, bf: bool): int {.cdecl, discardable, importc: "keypad", dynlib: libncurses.}
+
+proc scrollok*(win: ptr window, bf: bool): int {.cdecl, discardable, importc: "scrollok", dynlib: libncurses.}
+
+proc erase*(): int {.cdecl, discardable, importc: "erase", dynlib: libncurses.}
+
+proc werase*(win: ptr window): int {.cdecl, discardable, importc: "werase", dynlib: libncurses.}
+
+proc wclear*(win: ptr window): int {.cdecl, discardable, importc: "wclear", dynlib: libncurses.}
+
+proc wrefresh*(win: ptr window): int {.cdecl, discardable, importc: "wrefresh", dynlib: libncurses.}
+
+proc wattron*(win: ptr window, attributes: int): int {.cdecl, discardable, importc: "wattron", dynlib: libncurses.}
+
+proc wresize*(win: ptr window, line, column: int): int {.cdecl, discardable, importc: "wresize", dynlib: libncurses.}
+
+proc mvwaddch*(win: ptr window, y, x: int, character: chtype): int {.cdecl, discardable, importc: "mvwaddch", dynlib: libncurses.}
+
+proc mvwaddstr*(win: ptr window, y, x: int, str: cstring): int {.cdecl, discardable, importc: "mvwaddstr", dynlib: libncurses.}
 
 proc box*(a2: ptr window, x, y: int64): int {.cdecl, discardable, importc: "box", dynlib: libncurses.}
 
