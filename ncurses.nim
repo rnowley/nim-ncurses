@@ -254,9 +254,21 @@ proc wattron*(win: ptr window, attributes: int): int {.cdecl, discardable, impor
 
 proc wresize*(win: ptr window, line, column: int): int {.cdecl, discardable, importc: "wresize", dynlib: libncurses.}
 
+proc wmove*(win: ptr window, y, x: int): int {.cdecl, discardable, importc: "wmove", dynlib: libncurses.}
+
+proc wbkgd*(win: ptr window, character: chtype): int {.cdecl, discardable, importc: "wbkgd", dynlib: libncurses.}
+
+proc wprintw*(win: ptr window, formattedString: cstring):int {.cdecl, discardable, importc: "wprintw", dynlib: libncurses.}
+
 proc mvwaddch*(win: ptr window, y, x: int, character: chtype): int {.cdecl, discardable, importc: "mvwaddch", dynlib: libncurses.}
 
 proc mvwaddstr*(win: ptr window, y, x: int, str: cstring): int {.cdecl, discardable, importc: "mvwaddstr", dynlib: libncurses.}
+
+proc set_escdelay*(size: int): int {.cdecl, discardable, importc: "set_escdelay", dynlib: libncurses.}
+
+proc def_prog_mode*(): int {.cdecl, discardable, importc: "def_prog_mode", dynlib: libncurses.}
+
+proc reset_prog_mode*(): int {.cdecl, discardable, importc: "reset_prog_mode", dynlib: libncurses.}
 
 proc box*(a2: ptr window, x, y: int64): int {.cdecl, discardable, importc: "box", dynlib: libncurses.}
 
