@@ -86,7 +86,7 @@ const
 
 # attributes
 
-template NCURSES_CAST*(`type`, value: expr): expr =
+template NCURSES_CAST*(`type`, value: untyped): untyped =
  (`type`)(value)
 
 # attributes
@@ -94,7 +94,7 @@ template NCURSES_CAST*(`type`, value: expr): expr =
 const
  NCURSES_ATTR_SHIFT* = 8'i64
 
-template NCURSES_BITS*(mask, shift: expr): expr =
+template NCURSES_BITS*(mask, shift: untyped): untyped =
  (NCURSES_CAST(int64, (mask)) shl ((shift) + NCURSES_ATTR_SHIFT))
 
 const
@@ -121,16 +121,16 @@ const
 #  These apply to the first 256 color pairs.
 #
 
-template COLOR_PAIR*(n: expr): expr =
+template COLOR_PAIR*(n: untyped): untyped =
  NCURSES_BITS((n), 0'i64)
 
-template PAIR_NUMBER*(a: expr): expr =
+template PAIR_NUMBER*(a: untyped): untyped =
  (NCURSES_CAST(int, ((NCURSES_CAST(uint64, (a)) and A_COLOR) shr
      NCURSES_ATTR_SHIFT)))
 
 # mouse interface
 
-template NCURSES_MOUSE_MASK*(b, m: expr): expr =
+template NCURSES_MOUSE_MASK*(b, m: untyped): untyped =
  ((m) shl (((b) - 1) * 5))
 
 const
@@ -180,22 +180,22 @@ const
  BUTTON_SHIFT* = NCURSES_MOUSE_MASK(6, 2)
  BUTTON_ALT* = NCURSES_MOUSE_MASK(6, 4)
 
-template BUTTON_RELEASE*(e, x: expr): expr =
+template BUTTON_RELEASE*(e, x: untyped): untyped =
  ((e) and NCURSES_MOUSE_MASK(x, 1))
 
-template BUTTON_PRESS*(e, x: expr): expr =
+template BUTTON_PRESS*(e, x: untyped): untyped =
  ((e) and NCURSES_MOUSE_MASK(x, 2))
 
-template BUTTON_CLICK*(e, x: expr): expr =
+template BUTTON_CLICK*(e, x: untyped): untyped =
  ((e) and NCURSES_MOUSE_MASK(x, 4))
 
-template BUTTON_DOUBLE_CLICK*(e, x: expr): expr =
+template BUTTON_DOUBLE_CLICK*(e, x: untyped): untyped =
  ((e) and NCURSES_MOUSE_MASK(x, 0o000000000010))
 
-template BUTTON_TRIPLE_CLICK*(e, x: expr): expr =
+template BUTTON_TRIPLE_CLICK*(e, x: untyped): untyped =
  ((e) and NCURSES_MOUSE_MASK(x, 0o000000000020))
 
-template BUTTON_RESERVED_EVENT*(e, x: expr): expr =
+template BUTTON_RESERVED_EVENT*(e, x: untyped): untyped =
  ((e) and NCURSES_MOUSE_MASK(x, 0o000000000040))
 
 type
