@@ -220,106 +220,106 @@ proc mouse_trafo*(a2: ptr cint; a3: ptr cint; a4: bool): bool {.cdecl, importc: 
 #  These functions are not in X/Open, but we use them in macro definitions:
 #
 
-proc getattrs*(a2: ptr window): int {.cdecl, discardable, importc: "getattrs", dynlib: libncurses.}
-proc getcurx*(a2: ptr window): int {.cdecl, discardable, importc: "getcurx", dynlib: libncurses.}
-proc getcury*(a2: ptr window): int {.cdecl, discardable, importc: "getcury", dynlib: libncurses.}
-proc getbegx*(a2: ptr window): int {.cdecl, discardable, importc: "getbegx", dynlib: libncurses.}
-proc getbegy*(a2: ptr window): int {.cdecl, discardable, importc: "getbegy", dynlib: libncurses.}
-proc getmaxx*(a2: ptr window): int {.cdecl, discardable, importc: "getmaxx", dynlib: libncurses.}
-proc getmaxy*(a2: ptr window): int {.cdecl, discardable, importc: "getmaxy", dynlib: libncurses.}
-proc getparx*(a2: ptr window): int {.cdecl, discardable, importc: "getparx", dynlib: libncurses.}
-proc getpary*(a2: ptr window): int {.cdecl, discardable, importc: "getpary", dynlib: libncurses.}
+proc getattrs*(a2: ptr window): cint {.cdecl, discardable, importc: "getattrs", dynlib: libncurses.}
+proc getcurx*(a2: ptr window): cint {.cdecl, discardable, importc: "getcurx", dynlib: libncurses.}
+proc getcury*(a2: ptr window): cint {.cdecl, discardable, importc: "getcury", dynlib: libncurses.}
+proc getbegx*(a2: ptr window): cint {.cdecl, discardable, importc: "getbegx", dynlib: libncurses.}
+proc getbegy*(a2: ptr window): cint {.cdecl, discardable, importc: "getbegy", dynlib: libncurses.}
+proc getmaxx*(a2: ptr window): cint {.cdecl, discardable, importc: "getmaxx", dynlib: libncurses.}
+proc getmaxy*(a2: ptr window): cint {.cdecl, discardable, importc: "getmaxy", dynlib: libncurses.}
+proc getparx*(a2: ptr window): cint {.cdecl, discardable, importc: "getparx", dynlib: libncurses.}
+proc getpary*(a2: ptr window): cint {.cdecl, discardable, importc: "getpary", dynlib: libncurses.}
 
 proc newwin*(lines, columns, begin_y, begin_x: int): ptr window {.cdecl, discardable, importc: "newwin", dynlib: libncurses.}
 
-proc delwin*(win: ptr window): int {.cdecl, discardable, importc: "delwin", dynlib: libncurses.}
+proc delwin*(win: ptr window): cint {.cdecl, discardable, importc: "delwin", dynlib: libncurses.}
 
-proc mvwin*(win: ptr window, y, x: int): int {.cdecl, discardable, importc: "mvwin", dynlib: libncurses.}
+proc mvwin*(win: ptr window, y, x: int): cint {.cdecl, discardable, importc: "mvwin", dynlib: libncurses.}
 
-proc subwin*(orig: ptr window, lines, columns, begin_y, begin_x: int): int {.cdecl, discardable, importc: "subwin", dynlib: libncurses.}
+proc subwin*(orig: ptr window, lines, columns, begin_y, begin_x: int): cint {.cdecl, discardable, importc: "subwin", dynlib: libncurses.}
 
-proc keypad*(win: ptr window, bf: bool): int {.cdecl, discardable, importc: "keypad", dynlib: libncurses.}
+proc keypad*(win: ptr window, bf: bool): cint {.cdecl, discardable, importc: "keypad", dynlib: libncurses.}
 
-proc scrollok*(win: ptr window, bf: bool): int {.cdecl, discardable, importc: "scrollok", dynlib: libncurses.}
+proc scrollok*(win: ptr window, bf: bool): cint {.cdecl, discardable, importc: "scrollok", dynlib: libncurses.}
 
-proc erase*(): int {.cdecl, discardable, importc: "erase", dynlib: libncurses.}
+proc erase*(): cint {.cdecl, discardable, importc: "erase", dynlib: libncurses.}
 
-proc werase*(win: ptr window): int {.cdecl, discardable, importc: "werase", dynlib: libncurses.}
+proc werase*(win: ptr window): cint {.cdecl, discardable, importc: "werase", dynlib: libncurses.}
 
-proc wclear*(win: ptr window): int {.cdecl, discardable, importc: "wclear", dynlib: libncurses.}
+proc wclear*(win: ptr window): cint {.cdecl, discardable, importc: "wclear", dynlib: libncurses.}
 
-proc wrefresh*(win: ptr window): int {.cdecl, discardable, importc: "wrefresh", dynlib: libncurses.}
+proc wrefresh*(win: ptr window): cint {.cdecl, discardable, importc: "wrefresh", dynlib: libncurses.}
 
-proc wattron*(win: ptr window, attributes: int): int {.cdecl, discardable, importc: "wattron", dynlib: libncurses.}
+proc wattron*(win: ptr window, attributes: int): cint {.cdecl, discardable, importc: "wattron", dynlib: libncurses.}
 
-proc wresize*(win: ptr window, line, column: int): int {.cdecl, discardable, importc: "wresize", dynlib: libncurses.}
+proc wresize*(win: ptr window, line, column: int): cint {.cdecl, discardable, importc: "wresize", dynlib: libncurses.}
 
-proc wmove*(win: ptr window, y, x: int): int {.cdecl, discardable, importc: "wmove", dynlib: libncurses.}
+proc wmove*(win: ptr window, y, x: int): cint {.cdecl, discardable, importc: "wmove", dynlib: libncurses.}
 
-proc wbkgd*(win: ptr window, character: chtype): int {.cdecl, discardable, importc: "wbkgd", dynlib: libncurses.}
+proc wbkgd*(win: ptr window, character: chtype): cint {.cdecl, discardable, importc: "wbkgd", dynlib: libncurses.}
 
-proc wprintw*(win: ptr window, formattedString: cstring):int {.cdecl, discardable, importc: "wprintw", dynlib: libncurses.}
+proc wprintw*(win: ptr window, formattedString: cstring): cint {.cdecl, discardable, importc: "wprintw", dynlib: libncurses.}
 
-proc mvwaddch*(win: ptr window, y, x: int, character: chtype): int {.cdecl, discardable, importc: "mvwaddch", dynlib: libncurses.}
+proc mvwaddch*(win: ptr window, y, x: int, character: chtype): cint {.cdecl, discardable, importc: "mvwaddch", dynlib: libncurses.}
 
-proc mvwaddstr*(win: ptr window, y, x: int, str: cstring): int {.cdecl, discardable, importc: "mvwaddstr", dynlib: libncurses.}
+proc mvwaddstr*(win: ptr window, y, x: int, str: cstring): cint {.cdecl, discardable, importc: "mvwaddstr", dynlib: libncurses.}
 
-proc set_escdelay*(size: int): int {.cdecl, discardable, importc: "set_escdelay", dynlib: libncurses.}
+proc set_escdelay*(size: int): cint {.cdecl, discardable, importc: "set_escdelay", dynlib: libncurses.}
 
-proc def_prog_mode*(): int {.cdecl, discardable, importc: "def_prog_mode", dynlib: libncurses.}
+proc def_prog_mode*(): cint {.cdecl, discardable, importc: "def_prog_mode", dynlib: libncurses.}
 
-proc reset_prog_mode*(): int {.cdecl, discardable, importc: "reset_prog_mode", dynlib: libncurses.}
+proc reset_prog_mode*(): cint {.cdecl, discardable, importc: "reset_prog_mode", dynlib: libncurses.}
 
-proc box*(a2: ptr window, x, y: int64): int {.cdecl, discardable, importc: "box", dynlib: libncurses.}
+proc box*(a2: ptr window, x, y: int64): cint {.cdecl, discardable, importc: "box", dynlib: libncurses.}
 
-proc raw*(): int {.cdecl, discardable, importc: "raw", dynlib: libncurses.}
+proc raw*(): cint {.cdecl, discardable, importc: "raw", dynlib: libncurses.}
 
 proc timeout*(delay: cint) {.cdecl, discardable, importc: "timeout", dynlib: libncurses.}
 
-proc noecho*(): int {.cdecl, discardable, importc: "noecho", dynlib: libncurses.}
+proc noecho*(): cint {.cdecl, discardable, importc: "noecho", dynlib: libncurses.}
 
-proc onecho*(): int {.cdecl, discardable, importc: "echo", dynlib: libncurses.}
+proc onecho*(): cint {.cdecl, discardable, importc: "echo", dynlib: libncurses.}
 
-proc use_default_colors*(): int {.cdecl, discardable, importc: "use_default_colors", dynlib: libncurses.}
+proc use_default_colors*(): cint {.cdecl, discardable, importc: "use_default_colors", dynlib: libncurses.}
 
-proc curs_set*(visibility: int): int {.cdecl, discardable, importc: "curs_set", dynlib: libncurses.}
+proc curs_set*(visibility: int): cint {.cdecl, discardable, importc: "curs_set", dynlib: libncurses.}
 
-proc clear*(): int {.cdecl, discardable, importc: "clear", dynlib: libncurses.}
+proc clear*(): cint {.cdecl, discardable, importc: "clear", dynlib: libncurses.}
 
-proc addch*(character: chtype): int {.cdecl, discardable, importc: "addch", dynlib: libncurses.}
+proc addch*(character: chtype): cint {.cdecl, discardable, importc: "addch", dynlib: libncurses.}
     ## Puts a character into the stdscr at its current window position and then advances
     ## the current window position to the next position.
     ## @Param: 'character' the character to put into the current window.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc addstr*(stringToAdd: cstring): int {.cdecl, discardable, importc: "addstr", dynlib: libncurses.}
+proc addstr*(stringToAdd: cstring): cint {.cdecl, discardable, importc: "addstr", dynlib: libncurses.}
     ## Adds a string of characters the the stdscr and advances the cursor.
     ## @Param: The string to add the stdscr.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc attroff*(attributes: int64): int {.cdecl, discardable, importc: "attroff", dynlib: libncurses.}
+proc attroff*(attributes: int64): cint {.cdecl, discardable, importc: "attroff", dynlib: libncurses.}
     ## Turns off the named attributes without affecting any other attributes.
     ## @Param: 'attributes' the attributes to turn off for the current window.
     ## @Returns: An integer value, but the returned value does not have any meaning and can
     ## thus be ignored.
 
-proc attron*(attributes: int64): int {.cdecl, discardable, importc: "attron", dynlib: libncurses.}
+proc attron*(attributes: int64): cint {.cdecl, discardable, importc: "attron", dynlib: libncurses.}
     ## Turns on the named attributes without affecting any other attributes.
     ## @Param: 'attributes' the attributes to turn on for the current window.
     ## @Returns: An integer value, but the returned value does not have any meaning and can
     ## thus be ignored.
 
-proc attrset*(attributes: int64): int {.cdecl, discardable, importc: "attrset", dynlib: libncurses.}
+proc attrset*(attributes: int64): cint {.cdecl, discardable, importc: "attrset", dynlib: libncurses.}
     ## Sets the current attributes of the given window to the provided attributes.
     ## @Param: 'attributes', the attributes to apply to the current window.
     ## @Returns: An integer value, but the returned value does not have any meaning and can
     ## thus be ignored.
 
-proc beep*(): int {.cdecl, discardable, importc: "beep", dynlib: libncurses.}
+proc beep*(): cint {.cdecl, discardable, importc: "beep", dynlib: libncurses.}
     ## Sounds an audible alarm on the terminal, otherwise it flashes the screen (visible bell).
     ## @Returns: ERR on failure and OK upon successfully beeping.
 
-proc bkgd*(background: int64): int {.cdecl, discardable, importc: "bkgd", dynlib: libncurses.}
+proc bkgd*(background: int64): cint {.cdecl, discardable, importc: "bkgd", dynlib: libncurses.}
     ## Sets the background property of the current window and apply this setting to every
     ## character position in the window.
     ## @Param: 'background' the background property to apply.
@@ -329,43 +329,43 @@ proc can_change_color*(): bool {.cdecl, importc: "can_change_color", dynlib: lib
     ## @Returns: true if the terminal supports colours and can change their definitions or
     ## false otherwise.
 
-proc cbreak*(): int {.cdecl, discardable, importc: "cbreak", dynlib: libncurses.}
+proc cbreak*(): cint {.cdecl, discardable, importc: "cbreak", dynlib: libncurses.}
     ## The cbreak routine disables line buffering and erase/kill character-processing
     ## (interrupt and flow control characters are unaffected), making characters typed by
     ## the user immediately available to the program.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc delch*(): int {.cdecl, discardable, importc: "delch", dynlib: libncurses.}
+proc delch*(): cint {.cdecl, discardable, importc: "delch", dynlib: libncurses.}
     ## Delete the character under the cursor in the stdscr.
     ## @Returns: ERR on failure and OK upon successfully flashing.
 
-proc deleteln*(): int {.cdecl, discardable, importc: "deleteln", dynlib: libncurses.}
+proc deleteln*(): cint {.cdecl, discardable, importc: "deleteln", dynlib: libncurses.}
     ## Deletes the line under the cursor in the stdscr. All lines below the current line are moved up one line.
     ## The bottom line of the window is cleared and the cursor position does not change.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc endwin*(): int {.cdecl, discardable, importc: "endwin", dynlib: libncurses.}
+proc endwin*(): cint {.cdecl, discardable, importc: "endwin", dynlib: libncurses.}
     ## A program should always call endwin before exiting or escaping from curses mode temporarily. This routine
     ## restores tty modes, moves the cursor to the lower left-hand corner of the screen and resets the terminal into the
     ## proper non-visual mode. Calling refresh or doupdate after a temporary escape causes the program to resume visual mode.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc flash*(): int {.cdecl, discardable, importc: "flash", dynlib: libncurses.}
+proc flash*(): cint {.cdecl, discardable, importc: "flash", dynlib: libncurses.}
     ## Flashes the screen and if that is not possible it sounds the alert. If this is not possible
     ## nothing happens.
     ## @Returns: ERR on failure and OK upon successfully flashing.
 
-proc getch*(): int {.cdecl, discardable, importc: "getch", dynlib: libncurses.}
+proc getch*(): cint {.cdecl, discardable, importc: "getch", dynlib: libncurses.}
     ## Read a character from the stdscr window.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc getnstr*(inputString: cstring; numberOfCharacters: int): int {.cdecl, discardable, importc: "getnstr", dynlib: libncurses.}
+proc getnstr*(inputString: cstring; numberOfCharacters: int): cint {.cdecl, discardable, importc: "getnstr", dynlib: libncurses.}
     ## Reads at most the specified number of characters into the provided string.
     ## @Param: 'inputString' the variable to read the input into.
     ## @Param: 'numberOfCharacters' the maximum number of characters to read.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc getstr*(inputString: cstring): int {.cdecl, discardable, importc: "getstr", dynlib: libncurses.}
+proc getstr*(inputString: cstring): cint {.cdecl, discardable, importc: "getstr", dynlib: libncurses.}
     ## Reads the inputted characters into the provided string.
     ## @Param: 'inputString' the variable to read the input into.
     ## @Returns: ERR on failure and OK upon successful completion.
@@ -374,7 +374,7 @@ proc has_colors*(): bool {.cdecl, importc: "has_colors", dynlib: libncurses.}
     ## Used to determine if the terminal can manipulate colours.
     ## @Returns: true if the terminal can manipulate colours or false if it cannot.
 
-proc init_pair*(pair: cshort; foreground: cshort; background: cshort): int {.cdecl, discardable, importc: "init_pair", dynlib: libncurses.}
+proc init_pair*(pair: cshort; foreground: cshort; background: cshort): cint {.cdecl, discardable, importc: "init_pair", dynlib: libncurses.}
     ## Changes the definition of a colour pair.
     ## @Param: 'pair' the number of the colour pair to change.
     ## @Param: 'foreground': the foreground colour number.
@@ -389,22 +389,22 @@ proc initscr*(): ptr window {.cdecl, discardable, importc: "initscr", dynlib: li
     ## @Note: If errors occur, initscr writes an appropriate error message to
     ## standard error and exits.
 
-proc insch*(character: chtype): int {.cdecl, discardable, importc: "insch", dynlib: libncurses.}
+proc insch*(character: chtype): cint {.cdecl, discardable, importc: "insch", dynlib: libncurses.}
     ## Inserts a character before the cursor in the stdscr.
     ## @Param: 'character' the character to insert.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc insertln*(): int {.cdecl, discardable, importc: "insertln", dynlib: libncurses.}
+proc insertln*(): cint {.cdecl, discardable, importc: "insertln", dynlib: libncurses.}
     ## Inserts a blank line above the current line in stdscr and the bottom line is lost.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc move*(y: int; x: int): int {.cdecl, discardable, importc: "move", dynlib: libncurses.}
+proc move*(y: int; x: int): cint {.cdecl, discardable, importc: "move", dynlib: libncurses.}
     ## Moves the cursor of stdscr to the specified coordinates.
     ## @Param: 'y' the line to move the cursor to.
     ## @Param: 'x' the column to move the cursor to.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc mvaddch*(y: int; x: int; character: chtype): int {.cdecl, discardable, importc: "mvaddch", dynlib: libncurses.}
+proc mvaddch*(y: int; x: int; character: chtype): cint {.cdecl, discardable, importc: "mvaddch", dynlib: libncurses.}
     ## Moves the cursor to the specified position and outputs the provided character.
     ## The cursor is then advanced to the next position.
     ## @Param: 'y' the line to move the cursor to.
@@ -412,7 +412,7 @@ proc mvaddch*(y: int; x: int; character: chtype): int {.cdecl, discardable, impo
     ## @Param: 'character' the character to put into the current window.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc mvaddstr*(y: int; x: int; stringToOutput: cstring): int {.cdecl, discardable, importc: "mvaddstr", dynlib: libncurses.}
+proc mvaddstr*(y: int; x: int; stringToOutput: cstring): cint {.cdecl, discardable, importc: "mvaddstr", dynlib: libncurses.}
     ## Moves the cursor to the specified position and outputs the provided string.
     ## The cursor is then advanced to the next position.
     ## @Param: 'y' the line to move the cursor to.
@@ -420,14 +420,14 @@ proc mvaddstr*(y: int; x: int; stringToOutput: cstring): int {.cdecl, discardabl
     ## @Param: 'stringToOutput' the string to put into the current window.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc mvprintw*(y: int; x: int; formattedString: cstring): int {.varargs, cdecl, discardable, importc: "mvprintw", dynlib: libncurses.}
+proc mvprintw*(y: int; x: int; formattedString: cstring): cint {.varargs, cdecl, discardable, importc: "mvprintw", dynlib: libncurses.}
     ## Prints out a formatted string to the stdscr at the specified row and column.
     ## @Param: 'y' the line to move the cursor to.
     ## @Param: 'x' the column to move the cursor to.
     ## @Param: 'formattedString' the string with formatting to be output to stdscr.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc mvwprintw*(destinationWindow: ptr window; y: int; x: int; formattedString: cstring): int {.varargs, cdecl, discardable, importc: "mvwprintw", dynlib: libncurses.}
+proc mvwprintw*(destinationWindow: ptr window; y: int; x: int; formattedString: cstring): cint {.varargs, cdecl, discardable, importc: "mvwprintw", dynlib: libncurses.}
     ## Prints out a formatted string to the specified window at the specified row and column.
     ## @Param: 'destinationWindow' the window to write the string to.
     ## @Param: 'y' the line to move the cursor to.
@@ -435,21 +435,21 @@ proc mvwprintw*(destinationWindow: ptr window; y: int; x: int; formattedString: 
     ## @Param: 'formattedString' the string with formatting to be output to stdscr.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc napms*(milliseconds: int): int {.cdecl, discardable, importc: "napms", dynlib: libncurses.}
+proc napms*(milliseconds: int): cint {.cdecl, discardable, importc: "napms", dynlib: libncurses.}
     ## Used to sleep for the specified milliseconds.
     ## @Params: 'milliseconds' the number of milliseconds to sleep for.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc nocbreak*(): int {.cdecl, discardable, importc: "nocbreak", dynlib: libncurses.}
+proc nocbreak*(): cint {.cdecl, discardable, importc: "nocbreak", dynlib: libncurses.}
     ## Returns the terminal to normal (cooked mode).
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc printw*(formattedString: cstring): int {.varargs, cdecl, discardable, importc: "printw", dynlib: libncurses.}
+proc printw*(formattedString: cstring): cint {.varargs, cdecl, discardable, importc: "printw", dynlib: libncurses.}
     ## Prints out a formatted string to the stdscr.
     ## @Param: 'formattedString' the string with formatting to be output to stdscr.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc refresh*(): int {.cdecl, discardable, importc: "refresh", dynlib: libncurses.}
+proc refresh*(): cint {.cdecl, discardable, importc: "refresh", dynlib: libncurses.}
     ## Must be called to get actual output to the terminal. refresh uses stdscr has the default window.
     ## @Returns: ERR on failure and OK upon successful completion.
 
@@ -458,20 +458,20 @@ proc scanw*(formattedInput: cstring): int {.varargs, cdecl, discardable, importc
     ## @Param: 'formattedInput' Contains the fields for the input to be mapped to.
     ## @Returns: The number of fields that were mapped in the call.
 
-proc start_color*(): int {.cdecl, discardable, importc: "start_color", dynlib: libncurses.}
+proc start_color*(): cint {.cdecl, discardable, importc: "start_color", dynlib: libncurses.}
     ## Initialises the the eight basic colours and the two global varables COLORS and COLOR_PAIRS.
     ## It also restores the colours on the terminal to the values that they had when the
     ## terminal was just turned on.
     ## @Note: It is good practice to call this routine right after initscr. It must be
     ## called before any other colour manipulating routines.
 
-proc waddstr*(destinationWindow: ptr window; stringToWrite: cstring): int {.cdecl, discardable, importc: "waddstr", dynlib: libncurses.}
+proc waddstr*(destinationWindow: ptr window; stringToWrite: cstring): cint {.cdecl, discardable, importc: "waddstr", dynlib: libncurses.}
     ## Writes a string to the specified window.
     ## @Param: 'destinationWindow' the window to write the string to.
     ## @Param: 'stringToWrite'
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc wgetch*(sourceWindow: ptr window): int {.cdecl, discardable, importc: "wgetch", dynlib: libncurses.}
+proc wgetch*(sourceWindow: ptr window): cint {.cdecl, discardable, importc: "wgetch", dynlib: libncurses.}
     ## Read a character from the specified window.
     ## @Param: 'sourceWindow' the window to read a character from.
     ## @Returns: ERR on failure and OK upon successful completion.
