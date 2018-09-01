@@ -276,6 +276,8 @@ proc raw*(): cint {.cdecl, discardable, importc: "raw", dynlib: libncurses.}
 
 proc timeout*(delay: cint) {.cdecl, discardable, importc: "timeout", dynlib: libncurses.}
 
+proc nodelay*(win: ptr window, bf: bool): cint {.cdecl, discardable, importc: "nodelay", dynlib: libncurses.}
+
 proc noecho*(): cint {.cdecl, discardable, importc: "noecho", dynlib: libncurses.}
 
 proc onecho*(): cint {.cdecl, discardable, importc: "echo", dynlib: libncurses.}
