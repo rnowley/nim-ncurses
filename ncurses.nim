@@ -72,6 +72,19 @@ const
  ERR* = (- 1)
  OK* = (0)
 
+# keys
+
+const
+  KEY_CODE_YES* = 0400
+  KEY_MIN* = 0401
+  KEY_BREAK* = 0401
+  KEY_SRESET* = 0530
+  KEY_RESET* = 0531
+  KEY_DOWN* = 0402
+  KEY_UP* = 0403
+  KEY_LEFT* = 0404
+  KEY_RIGHT* = 0405
+
 # colors
 
 const
