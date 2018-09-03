@@ -257,6 +257,8 @@ proc keypad*(win: ptr window, bf: bool): cint {.cdecl, discardable, importc: "ke
 
 proc scrollok*(win: ptr window, bf: bool): cint {.cdecl, discardable, importc: "scrollok", dynlib: libncurses.}
 
+proc scroll*(win: ptr window): cint {.cdecl, discardable, importc: "scroll", dynlib: libncurses.}
+
 proc erase*(): cint {.cdecl, discardable, importc: "erase", dynlib: libncurses.}
 
 proc werase*(win: ptr window): cint {.cdecl, discardable, importc: "werase", dynlib: libncurses.}
