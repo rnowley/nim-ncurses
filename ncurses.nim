@@ -265,7 +265,9 @@ proc wclear*(win: ptr window): cint {.cdecl, discardable, importc: "wclear", dyn
 
 proc wrefresh*(win: ptr window): cint {.cdecl, discardable, importc: "wrefresh", dynlib: libncurses.}
 
-proc wattron*(win: ptr window, attributes: int): cint {.cdecl, discardable, importc: "wattron", dynlib: libncurses.}
+proc wattron*(win: ptr window, attributes: int64): cint {.cdecl, discardable, importc: "wattron", dynlib: libncurses.}
+
+proc wattroff*(win: ptr window, attributes: int64): cint {.cdecl, discardable, importc: "wattroff", dynlib: libncurses.}
 
 proc wresize*(win: ptr window, line, column: int): cint {.cdecl, discardable, importc: "wresize", dynlib: libncurses.}
 
