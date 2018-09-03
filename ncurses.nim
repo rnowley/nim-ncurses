@@ -395,6 +395,8 @@ proc has_colors*(): bool {.cdecl, importc: "has_colors", dynlib: libncurses.}
     ## Used to determine if the terminal can manipulate colours.
     ## @Returns: true if the terminal can manipulate colours or false if it cannot.
 
+proc init_color*(color: cshort, r: cshort, g: cshort, b: cshort): cint {.cdecl, discardable, importc: "init_color", dynlib: libncurses.}
+
 proc init_pair*(pair: cshort; foreground: cshort; background: cshort): cint {.cdecl, discardable, importc: "init_pair", dynlib: libncurses.}
     ## Changes the definition of a colour pair.
     ## @Param: 'pair' the number of the colour pair to change.
