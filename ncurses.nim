@@ -249,7 +249,9 @@ proc delwin*(win: ptr window): cint {.cdecl, discardable, importc: "delwin", dyn
 
 proc mvwin*(win: ptr window, y, x: int): cint {.cdecl, discardable, importc: "mvwin", dynlib: libncurses.}
 
-proc subwin*(orig: ptr window, lines, columns, begin_y, begin_x: int): cint {.cdecl, discardable, importc: "subwin", dynlib: libncurses.}
+proc subpad*(orig: ptr window, lines, columns, begin_y, begin_x: int): ptr window {.cdecl, discardable, importc: "subpad", dynlib: libncurses.}
+
+proc subwin*(orig: ptr window, lines, columns, begin_y, begin_x: int): ptr window {.cdecl, discardable, importc: "subwin", dynlib: libncurses.}
 
 proc keypad*(win: ptr window, bf: bool): cint {.cdecl, discardable, importc: "keypad", dynlib: libncurses.}
 
