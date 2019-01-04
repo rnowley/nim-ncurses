@@ -11,7 +11,6 @@ else:
 type
   # 32 or 64
   chtype*  = cuint ## Holds a character and possibly an attribute
-  mmask_t* = uint32
   # ...must be at least as wide as chtype
   attr_t*  = chtype ## Attribute
 
@@ -21,8 +20,8 @@ type
     ext_color: cint
 
   ldat = object ## line data
-  
-  window* = win_st
+  Screen* = object
+  Window* = win_st
   win_st = object ## window struct
     cury*, curx*: cshort      # current cursor position
     
@@ -55,7 +54,7 @@ type
     
     # these are used only if this is a sub-window
     pary*, parx*: cint        # y, x coordinates of this window in parent
-    parent*: ptr window       # pointer to parent if a sub-window
+    parent*: ptr Window       # pointer to parent if a sub-window
     
     # these are used only if this is a pad
     pad*: pdat
@@ -68,7 +67,8 @@ type
     pad_top*,    pad_left*:  cshort
     pad_bottom*, pad_right*: cshort
 
-  MEVENT* = object ## mouse event
+  mmask_t* = uint32
+  Mevent* = object ## mouse event
     id*: cshort               # ID to distinguish multiple devices
     x*, y*, z*: cint          # event coordinates (character-cell)
     bstate*: mmask_t          # button state bits
@@ -99,21 +99,21 @@ template PAIR_NUMBER*(a: untyped): untyped =
 
 #add_wchs: Adding complex characters to a window
 proc add_wch*(wch: ptr cchar_t): ErrCode {.ncurses, importc: "add_wch".}
-proc wadd_wch*(win: ptr window, wch: ptr cchar_t): ErrCode {.ncurses, importc: "wadd_wch".}
+proc wadd_wch*(win: ptr Window, wch: ptr cchar_t): ErrCode {.ncurses, importc: "wadd_wch".}
 proc mvadd_wch*(y, x: cint, wch: ptr cchar_t): ErrCode {.ncurses, importc: "mvadd_wch".}
-proc mvwadd_wch*(win: ptr window, y, x: cint, wch: ptr cchar_t): ErrCode {.ncurses, importc: "mvwadd_wch".}
+proc mvwadd_wch*(win: ptr Window, y, x: cint, wch: ptr cchar_t): ErrCode {.ncurses, importc: "mvwadd_wch".}
 proc echo_wchar*(wch: ptr cchar_t): ErrCode {.ncurses, importc: "echo_wchar".}
-proc wech_wchar*(win: ptr window, wch: ptr cchar_t): ErrCode {.ncurses, importc: "wech_wchar".}
+proc wech_wchar*(win: ptr Window, wch: ptr cchar_t): ErrCode {.ncurses, importc: "wech_wchar".}
 
 #add_wchstr: Adding an array of complex characters to a window
 proc add_wchstr*(wchstr: ptr cchar_t): ErrCode {.ncurses, importc: "add_wchstr".}
 proc add_wchnstr*(wchstr: ptr cchar_t, numberOfCharacters: cint): ErrCode {.ncurses, importc: "add_wchnstr".}
-proc wadd_wchstr*(win: ptr window, wchstr: ptr cchar_t): ErrCode {.ncurses, importc: "wadd_wchstr".}
-proc wadd_wchnstr*(win: ptr window, wchstr: ptr cchar_t, n: cint): ErrCode {.ncurses, importc: "wadd_wchnstr".}
+proc wadd_wchstr*(win: ptr Window, wchstr: ptr cchar_t): ErrCode {.ncurses, importc: "wadd_wchstr".}
+proc wadd_wchnstr*(win: ptr Window, wchstr: ptr cchar_t, n: cint): ErrCode {.ncurses, importc: "wadd_wchnstr".}
 proc mvadd_wchstr*(y, x: cint, wchstr: ptr cchar_t): ErrCode {.ncurses, importc: "mvadd_wchstr".}
 proc mvadd_wchnstr*(y, x: cint, wchstr: ptr cchar_t, n: cint): ErrCode {.ncurses, importc: "mvadd_wchnstr".}
-proc mvwadd_wchstr*(win: ptr window, y, x: cint, wchstr: ptr cchar_t): ErrCode {.ncurses, importc: "mvwadd_wchstr".}
-proc mvwadd_wchnstr*(win: ptr window, y, x: cint, wchstr: ptr cchar_t, n: cint): ErrCode {.ncurses, importc: "mvwadd_wchnstr".}
+proc mvwadd_wchstr*(win: ptr Window, y, x: cint, wchstr: ptr cchar_t): ErrCode {.ncurses, importc: "mvwadd_wchstr".}
+proc mvwadd_wchnstr*(win: ptr Window, y, x: cint, wchstr: ptr cchar_t, n: cint): ErrCode {.ncurses, importc: "mvwadd_wchnstr".}
 
 #addch: Adding a character (with attributes) to a window
 proc addch*(character: chtype): ErrCode {.ncurses, importc: "addch".}
@@ -121,21 +121,21 @@ proc addch*(character: chtype): ErrCode {.ncurses, importc: "addch".}
   ## the current window position to the next position.
   ## @Param: 'character' the character to put into the current window.
   ## @Returns: ERR on failure and OK upon successful completion.
-proc waddch*(win: ptr window, ch: chtype): ErrCode {.ncurses, importc: "waddch".}
+proc waddch*(win: ptr Window, ch: chtype): ErrCode {.ncurses, importc: "waddch".}
 proc mvaddch*(y, x: cint, ch: chtype): ErrCode {.ncurses, importc: "mvaddch".}
-proc mvwaddch*(win: ptr window, y, x: int, ch: chtype): ErrCode {.ncurses, importc: "mvwaddch".}
+proc mvwaddch*(win: ptr Window, y, x: int, ch: chtype): ErrCode {.ncurses, importc: "mvwaddch".}
 proc echochar*(ch: chtype): ErrCode {.ncurses, importc: "echochar".}
-proc wechochar*(win: ptr window, ch: chtype): ErrCode {.ncurses, importc: "wechochar".}
+proc wechochar*(win: ptr Window, ch: chtype): ErrCode {.ncurses, importc: "wechochar".}
 
 #addchstr: Adding a string of characters (and attributes) to a window
 proc addchstr*(chstr: ptr chtype): ErrCode {.ncurses, importc: "addchstr".}
 proc addchnstr*(chstr: ptr chtype, n: cint): ErrCode {.ncurses, importc: "addchnstr".}
-proc waddchstr*(win: ptr window, chstr: ptr chtype): ErrCode {.ncurses, importc: "waddchstr".}
-proc waddchnstr*(win: ptr window, chstr: ptr chtype, n: cint): ErrCode {.ncurses, importc: "waddchnstr".}
+proc waddchstr*(win: ptr Window, chstr: ptr chtype): ErrCode {.ncurses, importc: "waddchstr".}
+proc waddchnstr*(win: ptr Window, chstr: ptr chtype, n: cint): ErrCode {.ncurses, importc: "waddchnstr".}
 proc mvaddchstr*(y, x: cint, chstr: ptr chtype): ErrCode {.ncurses, importc: "mvaddchstr".}
 proc mvaddchnstr*(y, x: cint, chstr: ptr chtype, n: cint): ErrCode {.ncurses, importc: "mvaddchnstr".}
-proc mvwaddchstr*(win: ptr window, y, x: cint, chstr: ptr chtype): ErrCode {.ncurses, importc: "mvwaddchstr".}
-proc mvwaddchnstr*(win: ptr window, y, x: cint, chstr: ptr chtype, n: cint): ErrCode {.ncurses, importc: "mvwaddchnstr".}
+proc mvwaddchstr*(win: ptr Window, y, x: cint, chstr: ptr chtype): ErrCode {.ncurses, importc: "mvwaddchstr".}
+proc mvwaddchnstr*(win: ptr Window, y, x: cint, chstr: ptr chtype, n: cint): ErrCode {.ncurses, importc: "mvwaddchnstr".}
 
 #addstr: Adding a string of characters to a window (cstring)
 proc addstr*(str: cstring): ErrCode {.ncurses, importc: "addstr".}
@@ -143,12 +143,12 @@ proc addstr*(str: cstring): ErrCode {.ncurses, importc: "addstr".}
   ## @Param: The string to add the stdscr.
   ## @Returns: ERR on failure and OK upon successful completion.
 proc addnstr*(str: cstring, n: cint): ErrCode {.ncurses, importc: "addnstr".}
-proc waddstr*(win: ptr window; str: cstring): ErrCode {.ncurses, importc: "waddstr".}
+proc waddstr*(win: ptr Window; str: cstring): ErrCode {.ncurses, importc: "waddstr".}
   ## Writes a string to the specified window.
   ## @Param: 'destinationWindow' the window to write the string to.
   ## @Param: 'stringToWrite'
   ## @Returns: ERR on failure and OK upon successful completion.
-proc waddnstr*(win: ptr window, str: cstring, n: cint): ErrCode {.ncurses, importc: "waddnstr".}
+proc waddnstr*(win: ptr Window, str: cstring, n: cint): ErrCode {.ncurses, importc: "waddnstr".}
 proc mvaddstr*(y, x: cint; str: cstring): ErrCode {.ncurses, importc: "mvaddstr".}
   ## Moves the cursor to the specified position and outputs the provided string.
   ## The cursor is then advanced to the next position.
@@ -157,18 +157,18 @@ proc mvaddstr*(y, x: cint; str: cstring): ErrCode {.ncurses, importc: "mvaddstr"
   ## @Param: 'stringToOutput' the string to put into the current window.
   ## @Returns: ERR on failure and OK upon successful completion.
 proc mvaddnstr*(y, x: cint, str: cstring, n: cint): ErrCode {.ncurses, importc: "mvaddnstr".}
-proc mvwaddstr*(win: ptr window, y, x: int, str: cstring): ErrCode {.ncurses, importc: "mvwaddstr".}
-proc mvwaddnstr*(win: ptr window, y, x: int, str: cstring, n: cint): ErrCode {.ncurses, importc: "mvwaddnstr".}
+proc mvwaddstr*(win: ptr Window, y, x: int, str: cstring): ErrCode {.ncurses, importc: "mvwaddstr".}
+proc mvwaddnstr*(win: ptr Window, y, x: int, str: cstring, n: cint): ErrCode {.ncurses, importc: "mvwaddnstr".}
 
 #addwstr: Adding a string of wide characters to a window (WideCString)
 proc addwstr(wstr: WideCString): ErrCode {.ncurses, importc: "addwstr".}
 proc addnwstr(wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "addnwstr".}
-proc waddwstr(win: ptr window, wstr: WideCString): ErrCode {.ncurses, importc: "waddwstr".}
-proc waddnwstr(win: ptr window, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "waddnwstr".}
-proc mvaddwstr(y, x: cint, win: ptr window, wstr: WideCString): ErrCode {.ncurses, importc: "mvaddwstr".}
-proc mvaddnwstr(y, x: cint, win: ptr window, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "mvaddnwstr".}
-proc mvwaddwstr(win: ptr window, y, x: cint, wstr: WideCString): ErrCode {.ncurses, importc: "mvwaddwstr".}
-proc mvwaddnwstr(win: ptr window, y, x: cint, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "mvwaddnwstr".}
+proc waddwstr(win: ptr Window, wstr: WideCString): ErrCode {.ncurses, importc: "waddwstr".}
+proc waddnwstr(win: ptr Window, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "waddnwstr".}
+proc mvaddwstr(y, x: cint, win: ptr Window, wstr: WideCString): ErrCode {.ncurses, importc: "mvaddwstr".}
+proc mvaddnwstr(y, x: cint, win: ptr Window, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "mvaddnwstr".}
+proc mvwaddwstr(win: ptr Window, y, x: cint, wstr: WideCString): ErrCode {.ncurses, importc: "mvwaddwstr".}
+proc mvwaddnwstr(win: ptr Window, y, x: cint, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "mvwaddnwstr".}
 
 #new_pair: Color-pair functions
 proc alloc_pair*(fg, bg: cint): ErrCode {.ncurses, importc: "".}
@@ -205,41 +205,41 @@ const
   A_ITALIC*      = NCURSES_BITS(u1, 22) #2147483648
 
 proc attr_get*(attrs: ptr attr_t, pair: ptr cshort, opts: pointer): ErrCode {.ncurses, importc: "attr_get".}
-proc wattr_get*(win: ptr window, attrs: ptr attr_t, pair: ptr cshort, opts: pointer): ErrCode {.ncurses, importc: "wattr_get".}
+proc wattr_get*(win: ptr Window, attrs: ptr attr_t, pair: ptr cshort, opts: pointer): ErrCode {.ncurses, importc: "wattr_get".}
 proc attr_set*(attrs: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "attr_set".}
-proc wattr_set*(win: ptr window, attrs: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "wattr_set".}
+proc wattr_set*(win: ptr Window, attrs: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "wattr_set".}
 proc attr_off*(attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "attr_off".}
-proc wattr_off*(win: ptr window, attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "wattr_off".}
+proc wattr_off*(win: ptr Window, attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "wattr_off".}
 proc attr_on*(attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "attr_on".}
-proc wattr_on*(win: ptr window, attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "wattr_on".}
+proc wattr_on*(win: ptr Window, attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "wattr_on".}
 proc attroff*(attrs: cint): ErrCode {.ncurses, importc: "attroff".}
   ## Turns off the named attributes without affecting any other attributes.
   ## @Param: 'attributes' the attributes to turn off for the current window.
   ## @Returns: An integer value, but the returned value does not have any meaning and can
   ## thus be ignored.
-proc wattroff*(win: ptr window, attrs: cint): ErrCode {.ncurses, importc: "wattroff".}
+proc wattroff*(win: ptr Window, attrs: cint): ErrCode {.ncurses, importc: "wattroff".}
 proc attron*(attrs: cint): ErrCode {.ncurses, importc: "attron".}
   ## Turns on the named attributes without affecting any other attributes.
   ## @Param: 'attributes' the attributes to turn on for the current window.
   ## @Returns: An integer value, but the returned value does not have any meaning and can
   ## thus be ignored.
-proc wattron*(win: ptr window, attrs: cint): ErrCode {.ncurses, importc: "wattron".}
+proc wattron*(win: ptr Window, attrs: cint): ErrCode {.ncurses, importc: "wattron".}
 proc attrset*(attrs: cint): ErrCode {.ncurses, importc: "attrset".}
   ## Sets the current attributes of the given window to the provided attributes.
   ## @Param: 'attributes', the attributes to apply to the current window.
   ## @Returns: An integer value, but the returned value does not have any meaning and can
   ## thus be ignored.
-proc wattrset*(win: ptr window, attrs: cint): ErrCode {.ncurses, importc: "wattrset".}
+proc wattrset*(win: ptr Window, attrs: cint): ErrCode {.ncurses, importc: "wattrset".}
 proc chgat*(n: cint, attr: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "chgat".}
-proc wchgat*(win: ptr window, n: cint, attr: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "wchgat".}
+proc wchgat*(win: ptr Window, n: cint, attr: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "wchgat".}
 proc mvchgat*(y, x: cint, n: cint, attr: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "mvchgat".}
-proc mvwchgat*(win: ptr window, y, x: cint, n: cint, attr: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "mvwchgat".}
+proc mvwchgat*(win: ptr Window, y, x: cint, n: cint, attr: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "mvwchgat".}
 proc color_set*(pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "color_set".}
-proc wcolor_set*(win: ptr window, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "wcolor_set".}
+proc wcolor_set*(win: ptr Window, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "wcolor_set".}
 proc standend(): ErrCode {.ncurses, importc: "standend".}
-proc wstandend*(win: ptr window): ErrCode {.ncurses, importc: "wstandend".}
+proc wstandend*(win: ptr Window): ErrCode {.ncurses, importc: "wstandend".}
 proc standout*(): ErrCode {.ncurses, importc: "standout".}
-proc wstandout*(win: ptr window): ErrCode {.ncurses, importc: "wstandout".}
+proc wstandout*(win: ptr Window): ErrCode {.ncurses, importc: "wstandout".}
 
 #termattrs: Enviroment query routines
 proc baudrate*(): cint {.ncurses, importc: "baudrate".}
@@ -265,47 +265,47 @@ proc flash*(): ErrCode {.ncurses, importc: "flash".}
 
 #bkgd: Window background manipulation routines
 proc bkgdset*(ch: chtype): void {.ncurses, importc: "bkgdset".}
-proc wbkgdset*(win: ptr window, ch: chtype): void {.ncurses, importc: "wbkgdset".}
+proc wbkgdset*(win: ptr Window, ch: chtype): void {.ncurses, importc: "wbkgdset".}
 proc bkgd*(ch: chtype): ErrCode {.ncurses, importc: "bkgd".}
   ## Sets the background property of the current window and apply this setting to every
   ## character position in the window.
   ## @Param: 'background' the background property to apply.
-proc wbkgd*(win: ptr window, ch: chtype): ErrCode {.ncurses, importc: "wbkgd".}
-proc getbkgd*(win: ptr window): chtype {.ncurses, importc: "getbkgd".}
+proc wbkgd*(win: ptr Window, ch: chtype): ErrCode {.ncurses, importc: "wbkgd".}
+proc getbkgd*(win: ptr Window): chtype {.ncurses, importc: "getbkgd".}
 
 #bkgrnd: Window complex background manipulation routines
 proc bkgrnd*(wch: cchar_t): ErrCode {.ncurses, importc: "bkgrnd".}
-proc wbkgrnd*(win: ptr window, wch: cchar_t): ErrCode {.ncurses, importc: "wbkgrnd".}
+proc wbkgrnd*(win: ptr Window, wch: cchar_t): ErrCode {.ncurses, importc: "wbkgrnd".}
 proc bkgrndset*(wch: cchar_t): void {.ncurses, importc: "bkgrndset".}
-proc wbkgrndset*(win: ptr window, wch: cchar_t): void {.ncurses, importc: "getbkgrnd".}
+proc wbkgrndset*(win: ptr Window, wch: cchar_t): void {.ncurses, importc: "getbkgrnd".}
 proc getbkgrnd*(wch: cchar_t): ErrCode {.ncurses, importc: "getbkgrnd".}
-proc wgetbkgrnd*(win: ptr window, wch: cchar_t): ErrCode {.ncurses, importc: "wgetbkgrnd".}
+proc wgetbkgrnd*(win: ptr Window, wch: cchar_t): ErrCode {.ncurses, importc: "wgetbkgrnd".}
 
 #border: Create borders, horizontal and vertical lines
 proc border*(ls, rs, ts, bs, tl, tr, bl, br: chtype): ErrCode {.ncurses, importc: "border".}
-proc wborder*(win: ptr window, ls, rs, ts, bs, tl, tr, bl, br: chtype): ErrCode {.ncurses, importc: "wborder".}
-proc box*(win: ptr window, verch, horch: chtype): ErrCode {.ncurses, importc: "box".}
+proc wborder*(win: ptr Window, ls, rs, ts, bs, tl, tr, bl, br: chtype): ErrCode {.ncurses, importc: "wborder".}
+proc box*(win: ptr Window, verch, horch: chtype): ErrCode {.ncurses, importc: "box".}
 proc hline*(ch: chtype, n: cint): ErrCode {.ncurses, importc: "hline".}
-proc whline*(win: ptr window, ch: chtype, n: cint): ErrCode {.ncurses, importc: "whline".}
+proc whline*(win: ptr Window, ch: chtype, n: cint): ErrCode {.ncurses, importc: "whline".}
 proc vline*(ch: chtype, n: cint): ErrCode {.ncurses, importc: "vline".}
-proc wvline*(win: ptr window, ch: chtype, n: cint): ErrCode {.ncurses, importc: "wvline".}
+proc wvline*(win: ptr Window, ch: chtype, n: cint): ErrCode {.ncurses, importc: "wvline".}
 proc mvhline*(y, x: cint, ch: chtype, n: cint): ErrCode {.ncurses, importc: "mvhline".}
-proc mvwhline*(win: ptr window, y, x: cint, ch: chtype, n: cint): ErrCode {.ncurses, importc: "mvwhline".}
+proc mvwhline*(win: ptr Window, y, x: cint, ch: chtype, n: cint): ErrCode {.ncurses, importc: "mvwhline".}
 proc mvvline*(y, x: cint, ch: chtype, n: cint): ErrCode {.ncurses, importc: "mvvline".}
-proc mvwvline*(win: ptr window, y, x: cint, ch: chtype, n: cint): ErrCode {.ncurses, importc: "mvwvline".}
+proc mvwvline*(win: ptr Window, y, x: cint, ch: chtype, n: cint): ErrCode {.ncurses, importc: "mvwvline".}
 
 #borderset: Create borders or lines using complex characters and renditions
 proc border_set*(ls, rs, ts, bs, tl, tr, bl, br: cchar_t): ErrCode {.ncurses, importc: "border_set".}
-proc wborder_set*(win: ptr window, ls, rs, ts, bs, tl, tr, bl, br: cchar_t): ErrCode {.ncurses, importc: "wborder_set".}
-proc box_set*(win: ptr window, verch, horch: cchar_t): ErrCode {.ncurses, importc: "box_set".}
+proc wborder_set*(win: ptr Window, ls, rs, ts, bs, tl, tr, bl, br: cchar_t): ErrCode {.ncurses, importc: "wborder_set".}
+proc box_set*(win: ptr Window, verch, horch: cchar_t): ErrCode {.ncurses, importc: "box_set".}
 proc hline_set*(wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "hline_set".}
-proc whline_set*(win: ptr window, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "whline_set".}
+proc whline_set*(win: ptr Window, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "whline_set".}
 proc mvhline_set*(y,x: cint, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "mvhline_set".}
-proc mvwhline_set*(win: ptr window, y,x: cint, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "mvwhline_set".}
+proc mvwhline_set*(win: ptr Window, y,x: cint, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "mvwhline_set".}
 proc vline_set*(wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "vline_set".}
-proc wvline_set*(win: ptr window, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "wvline_set".}
+proc wvline_set*(win: ptr Window, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "wvline_set".}
 proc mvvline_set*(y,x: cint, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "mvvline_set".}
-proc mvwvline_set*(win: ptr window, y,x: cint, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "mvwvline_set".}
+proc mvwvline_set*(win: ptr Window, y,x: cint, wch: cchar_t, n: cint): ErrCode {.ncurses, importc: "mvwvline_set".}
 
 #inopts: Input options
 proc cbreak*(): ErrCode {.ncurses, importc: "cbreak".}
@@ -320,44 +320,44 @@ proc noecho*(): ErrCode {.ncurses, importc: "noecho".}
 proc onecho*(): ErrCode {.ncurses, importc: "echo".}
   ## Previously `echo`, but this being a Nim's print function, is changed to `onecho`
 proc halfdelay*(tenths: cint): ErrCode {.ncurses, importc: "halfdelay".}
-proc keypad*(win: ptr window, bf: bool): cint {.ncurses, importc: "keypad".}
-proc meta*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "meta".}
-proc nodelay*(win: ptr window, bf: bool): cint {.ncurses, importc: "nodelay".}
+proc keypad*(win: ptr Window, bf: bool): cint {.ncurses, importc: "keypad".}
+proc meta*(win: ptr Window, bf: bool): ErrCode {.ncurses, importc: "meta".}
+proc nodelay*(win: ptr Window, bf: bool): cint {.ncurses, importc: "nodelay".}
 proc raw*(): ErrCode {.ncurses, importc: "raw".}
 proc noraw*(): ErrCode {.ncurses, importc: "noraw".}
 proc noqiflush*(): void {.ncurses, importc: "noqiflush".}
 proc qiflush*(): void {.ncurses, importc: "qiflush".}
 proc notimeout*(): ErrCode {.ncurses, importc: "notimeout".}
 proc timeout*(delay: cint): void {.ncurses, importc: "timeout".}
-proc wtimeout*(win: ptr window, delay: cint): void {.ncurses, importc: "wtimeout".}
+proc wtimeout*(win: ptr Window, delay: cint): void {.ncurses, importc: "wtimeout".}
 proc typeahead*(fd: cint): ErrCode {.ncurses, importc: "typeahead".}
 
 #clear: Clear all or part of a window
 proc erase*(): ErrCode {.ncurses, importc: "erase".}
-proc werase*(win: ptr window): ErrCode {.ncurses, importc: "werase".}
+proc werase*(win: ptr Window): ErrCode {.ncurses, importc: "werase".}
 proc clear*(): ErrCode {.ncurses, importc: "clear".}
-proc wclear*(win: ptr window): ErrCode {.ncurses, importc: "wclear".}
+proc wclear*(win: ptr Window): ErrCode {.ncurses, importc: "wclear".}
 proc clrtobot*(): ErrCode {.ncurses, importc: "clrtobot".}
-proc wclrtobot*(win: ptr window): ErrCode {.ncurses, importc: "wclrtobot".}
+proc wclrtobot*(win: ptr Window): ErrCode {.ncurses, importc: "wclrtobot".}
 proc clrtoeol*(): ErrCode {.ncurses, importc: "clrtoeol".}
-proc wclrtoeol*(win: ptr window): ErrCode {.ncurses, importc: "wclrtoeol".}
+proc wclrtoeol*(win: ptr Window): ErrCode {.ncurses, importc: "wclrtoeol".}
 
 #outopts: Output options
-proc clearok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "clearok".}
-proc idlok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "idlok".}
-proc idcok*(win: ptr window, bf: bool): void {.ncurses, importc: "idcok".}
-proc immedok*(win: ptr window, bf: bool): void {.ncurses, importc: "immedok".}
-proc leaveok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "leaveok".}
+proc clearok*(win: ptr Window, bf: bool): ErrCode {.ncurses, importc: "clearok".}
+proc idlok*(win: ptr Window, bf: bool): ErrCode {.ncurses, importc: "idlok".}
+proc idcok*(win: ptr Window, bf: bool): void {.ncurses, importc: "idcok".}
+proc immedok*(win: ptr Window, bf: bool): void {.ncurses, importc: "immedok".}
+proc leaveok*(win: ptr Window, bf: bool): ErrCode {.ncurses, importc: "leaveok".}
 proc setscrreg*(top, bot: cint): ErrCode {.ncurses, importc: "setscrreg".}
-proc wsetscrreg*(win: ptr window, top, bot: cint): ErrCode {.ncurses, importc: "wsetscrreg".}
-proc scrollok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "scrollok".}
+proc wsetscrreg*(win: ptr Window, top, bot: cint): ErrCode {.ncurses, importc: "wsetscrreg".}
+proc scrollok*(win: ptr Window, bf: bool): ErrCode {.ncurses, importc: "scrollok".}
 proc nl*(): ErrCode {.ncurses, importc: "nl".}
 proc nonl*(): ErrCode {.ncurses, importc: "nonl".}
 
 #overlay: overlay and manipulate overlapped windows
-proc overlay*(srcwin, dstwin: ptr window): ErrCode {.ncurses, importc: "overlay".}
-proc overwrite*(srcwin, dstwin: ptr window): ErrCode {.ncurses, importc: "overwrite".}
-proc copywin*(srcwin, dstwin: ptr window,
+proc overlay*(srcwin, dstwin: ptr Window): ErrCode {.ncurses, importc: "overlay".}
+proc overwrite*(srcwin, dstwin: ptr Window): ErrCode {.ncurses, importc: "overwrite".}
+proc copywin*(srcwin, dstwin: ptr Window,
   sminrow, smincol,
   dminrow, dmincol,
   dmaxrow, dmaxcol: cint
@@ -372,7 +372,7 @@ proc resetty*(): ErrCode {.ncurses, importc: "resetty".}
 proc savetty*(): ErrCode {.ncurses, importc: "savetty".}
 proc getsyx*(y,x: cint): void {.ncurses, importc: "getsyx".}
 proc setsyx*(y,x: cint): void {.ncurses, importc: "setsyx".}
-proc ripoffline*(line: cint, init: proc(win: ptr window, cols: cint): cint): ErrCode {.ncurses, importc: "ripoffline".}
+proc ripoffline*(line: cint, init: proc(win: ptr Window, cols: cint): cint): ErrCode {.ncurses, importc: "ripoffline".}
 proc curs_set*(visibility: cint): cint {.ncurses, importc: "curs_set".}
 proc napms*(ms: cint): cint {.ncurses, importc: "napms".}
     ## Used to sleep for the specified milliseconds.
@@ -387,14 +387,295 @@ proc use_extended_names*(enable: bool): cint {.ncurses, importc: "use_extended_n
 proc define_key*(definition: cstring, keycode: cint): ErrCode {.ncurses, importc: "define_key".}
 
 #terminfo: interfaces to terminfo database
-var
-  boolnames {.ncurses, importc: "boolnames".}: cstringArray
+#[
+type
+  TERMTYPE = object
+    term_names, str_table: cstring
+    booleans: ptr bool
+    numbers: ptr cint
+    strings: cstringArray
+    term_names_table: cstring
+    ext_Names: cstringArray
+    num_Booleans, num_Numbers, num_Strings: cushort
+    ext_Booleans, ext_Numbers, ext_Strings: cushort
+  TERMTYPE2 = TERMTYPE
+  TERMINAL = object
+    `type`: TERMTYPE
+    filedes: cshort #yeaaaaah don't feel like adding terminfo ()
+  #if interested:
+  #https://invisible-island.net/ncurses/man/curs_terminfo.3x.html
+  #look in /usr/include/term.h
+]#
 
+#util: misc utility routines
+proc unctrl*(c: chtype): cstring {.ncurses, importc: "unctrl".}
+proc wunctrl*(c: ptr cchar_t): WideCString {.ncurses, importc: "wunctrl".}
+proc keyname*(c: cint): cstring {.ncurses, importc: "keyname".}
+proc keyname_wch*(w: WideCString): cstring {.ncurses, importc: "key_name".} ## previously key_name, had to be renamed.
+proc filter*(): void {.ncurses, importc: "filter".}
+proc nofilter*(): void {.ncurses, importc: "nofilter".}
+proc use_env*(f: bool): void {.ncurses, importc: "use_env".}
+proc use_tioctl*(f: bool): void {.ncurses, importc: "use_tioctl".}
+proc putwin*(win: ptr Window, filep: File): ErrCode {.ncurses, importc: "putwin".}
+proc getwin*(filep: File): ptr Window {.ncurses, importc: "getwin".}
+proc delay_output*(ms: cint): ErrCode {.ncurses, importc: "delay_output".}
+proc flushinp*(): cint {.ncurses, importc: "flushinp".}
 
+#delch: delete character under the cursor in a window
+proc delch*(): cint {.ncurses, importc: "delch".}
+  ## Delete the character under the cursor in the stdscr.
+  ## @Returns: ERR on failure and OK upon successfully flashing.
+proc wdelch*(win: ptr Window): ErrCode {.ncurses, importc: "wdelch".}
+proc mvdelch*(y,x: cint): ErrCode {.ncurses, importc: "mvdelch".}
+proc mvwdelch*(win: ptr Window, y,x: cint): ErrCode {.ncurses, importc: "mvwdelch".}
 
+#deleteln: delete and insert lines in a window
+proc deleteln*(): cint {.ncurses, importc: "deleteln".}
+  ## Deletes the line under the cursor in the stdscr. All lines below the current line are moved up one line.
+  ## The bottom line of the window is cleared and the cursor position does not change.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc wdeleteln*(win: ptr Window): ErrCode {.ncurses, importc: "wdeleteln".}
+proc insdeln*(): ErrCode {.ncurses, importc: "insdeln".}
+proc winsdeln*(win: ptr Window, n: int): ErrCode {.ncurses, importc: "winsdeln".}
+proc insertln*(): cint {.ncurses, importc: "insertln".}
+  ## Inserts a blank line above the current line in stdscr and the bottom line is lost.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc winsertln*(win: ptr Window): ErrCode {.ncurses, importc: "winsertln".}
 
+#iniscr: screen initialization and manipulation routines
+proc initscr*(): ptr Window {.ncurses, importc: "initscr".}
+  ## Usually the first curses routine to be called when initialising a program
+  ## The initscr code determines the terminal type and initialises  all curses data structures.  initscr also causes the
+  ## first call to refresh to clear the screen.
+  ## @Returns: A pointer to stdscr is returned if the operation is successful.
+  ## @Note: If errors occur, initscr writes an appropriate error message to
+  ## standard error and exits.
+proc endwin*(): ErrCode {.ncurses, importc: "endwin".}
+  ## A program should always call endwin before exiting or escaping from curses mode temporarily. This routine
+  ## restores tty modes, moves the cursor to the lower left-hand corner of the screen and resets the terminal into the
+  ## proper non-visual mode. Calling refresh or doupdate after a temporary escape causes the program to resume visual mode.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc isendwin*(): bool {.ncurses, importc: "isendwin".}
+proc newterm*(`type`: cstring, outfd, infd: File): ptr Screen {.ncurses, importc: "newterm".}
+proc set_term*(`new`: ptr Screen): ptr Screen {.ncurses, importc: "set_term".}
+proc delscreen*(sp: ptr Screen): void {.ncurses, importc: "delscreen".}
 
+#window: create a window
+proc newwin*(nlines, ncols, begin_y, begin_x: cint): ptr Window {.ncurses, importc: "newwin".}
+proc delwin*(win: ptr Window): ErrCode {.ncurses, importc: "delwin".}
+proc mvwin*(win: ptr Window, y,x: cint): ErrCode {.ncurses, importc: "mvwin".}
+proc subwin*(orig: ptr Window, nlines, ncols, begin_y, begin_x: cint): ptr Window {.ncurses, importc: "subwin".}
+proc derwin*(orig: ptr Window, nlines, ncols, begin_y, begin_x: cint): ptr Window {.ncurses, importc: "derwin".}
+proc mvderwin*(win: ptr Window, par_y, par_x: cint): ErrCode {.ncurses, importc: "mvderwin".}
+proc dupwin*(win: ptr Window): ptr Window {.ncurses, importc: "dupwin".}
+proc wsyncup*(win: ptr Window): void {.ncurses, importc: "wsyncup".}
+proc syncok*(win: ptr Window, bf: bool): ErrCode {.ncurses, importc: "syncok".}
+proc wcursyncup*(win: ptr Window): void {.ncurses, importc: "wcursynup".}
+proc wsyncdown*(win: ptr Window): void {.ncurses, importc: "wsyncdown".}
 
+#refresh: refresh windows and lines
+proc refresh*(): cint {.ncurses, importc: "refresh".}
+  ## Must be called to get actual output to the terminal. refresh uses stdscr has the default window.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc wrefresh*(win: ptr Window): cint {.ncurses, importc: "wrefresh".}
+proc wnoutrefresh*(win: ptr Window): ErrCode {.ncurses, importc: "wnoutrefresh".}
+proc doupdate*(): ErrCode {.ncurses, importc: "doupdate".}
+proc redrawwin*(win: ptr Window): ErrCode {.ncurses, importc: "redrawwin".}
+proc wredrawln*(win: ptr Window, beg_lines, num_lines: cint): ErrCode {.ncurses, importc: "wredrawln".}
+
+#slk: soft label routines
+proc slk_init*(fmt: cint): ErrCode {.ncurses, importc: "slk_init".}
+proc slk_set*(labnum: cint, label: WideCString, fmt: cint): ErrCode {.ncurses, importc: "slk_set".}
+proc slk_wset*(labnum: cint, label: WideCString, fmt: cint): ErrCode {.ncurses, importc: "slk_wset".}
+proc slk_label*(labnum: cint): cstring {.ncurses, importc: "slk_label".}
+proc slk_refresh*(): ErrCode {.ncurses, importc: "slk_refresh".}
+proc slk_noutrefresh*(): ErrCode {.ncurses, importc: "slk_noutrefresh".}
+proc slk_clear*(): ErrCode {.ncurses, importc: "slk_clear".}
+proc slk_restore*(): ErrCode {.ncurses, importc: "slk_restore".}
+proc slk_touch*(): ErrCode {.ncurses, importc: "slk_touch".}
+proc slk_attron_ch*(attrs: chtype): ErrCode {.ncurses, importc: "slk_attron".}
+proc slk_attroff_ch*(attrs: chtype): ErrCode {.ncurses, importc: "slk_attroff".}
+proc slk_attrset_ch*(attrs: chtype): ErrCode {.ncurses, importc: "slk_attrset".}
+proc slk_attr_on*(attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "slk_attr_on".}
+proc slk_attr_off*(attrs: attr_t, opts: pointer): ErrCode {.ncurses, importc: "slk_attr_off".}
+proc slk_attr_set*(attrs: attr_t, pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "slk_attr_set".}
+proc slk_attr*(): attr_t {.ncurses, importc: "slk_attr".}
+proc slk_color*(pair: cshort): ErrCode {.ncurses, importc: "slk_color".}
+proc extended_slk_color*(pair: cint): ErrCode {.ncurses, importc: "extended_slk_color".}
+
+#get_wch: get (or push back) a wide character from a terminal keyboard
+proc get_wch*(wch: WideCString): ErrCode {.ncurses, importc: "get_wch".}
+proc wget_wch*(win: ptr Window, wch: WideCString): ErrCode {.ncurses, importc: "wget_wsch".}
+proc mvget_wch*(y,x: cint, wch: WideCString): ErrCode {.ncurses, importc: "mvget_wch".}
+proc mvwget_wch*(win: ptr Window, y,x: cint, wch: WideCString): ErrCode {.ncurses, importc: "mvwget_wch".}
+proc unget_wch*(wch: WideCString): ErrCode {.ncurses, importc: "unget_wch".}
+
+#get_wstr: get an array of wide characters from a terminal keyboard
+proc get_wstr*(wstr: WideCString): ErrCode {.ncurses, importc: "get_wstr".}
+proc getn_wstr*(wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "getn_wstr".}
+proc wget_wstr*(win: ptr Window, wstr: WideCString): ErrCode {.ncurses, importc: "wget_wsch".}
+proc wgetn_wstr*(win: ptr Window, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "wgetn_wsch".}
+proc mvget_wstr*(y,x: cint, wstr: WideCString): ErrCode {.ncurses, importc: "mvget_wstr".}
+proc mvgetn_wstr*(y,x: cint, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "mvgetn_wstr".}
+proc mvwget_wstr*(win: ptr Window, y,x: cint, wstr: WideCString): ErrCode {.ncurses, importc: "mvwget_wstr".}
+proc mvwgetn_wstr*(win: ptr Window, y,x: cint, wstr: WideCString, n: cint): ErrCode {.ncurses, importc: "mvwgetn_wstr".}
+
+#legacy: get cursor and window coordinates, attributes
+proc getattrs*(win: ptr Window): cint {.ncurses, importc: "getattrs".}
+proc getbegx*(win: ptr Window): cint {.ncurses, importc: "getbegx".}
+proc getbegy*(win: ptr Window): cint {.ncurses, importc: "getbegy".}
+proc getcurx*(win: ptr Window): cint {.ncurses, importc: "getcurx".}
+proc getcury*(win: ptr Window): cint {.ncurses, importc: "getcury".}
+proc getmaxx*(win: ptr Window): cint {.ncurses, importc: "getmaxx".}
+proc getmaxy*(win: ptr Window): cint {.ncurses, importc: "getmaxy".}
+proc getparx*(win: ptr Window): cint {.ncurses, importc: "getparx".}
+proc getpary*(win: ptr Window): cint {.ncurses, importc: "getpary".}
+
+#getyx: get curses cursor and window coordinates (these are implemented as macros in ncurses.h)
+template getyx*(win: ptr Window, y, x: cint): untyped=
+  ## Reads the logical cursor location from the specified window.
+  ## @Param: 'win' the window to get the cursor location from.
+  ## @Param: 'y' stores the height of the window.
+  ## @Param: 'x' stores the width of the window.
+  (y = getcury(win); x = getcurx(win)) ## testing
+template getbegyx*(win: ptr Window, y, x: cint): untyped=
+  (y = getbegy(win); x = getbegx(win))
+template getmaxyx*(win: ptr Window, y, x: cint): untyped=
+  ## retrieves the size of the specified window in the provided y and x parameters.
+  ## @Param: 'win' the window to measure.
+  ## @Param: 'y' stores the height of the window.
+  ## @Param: 'x' stores the width of the window.
+  (y = getmaxy(win); x = getmaxx(win))
+template getparyx*(win: ptr Window, y, x: cint): untyped=
+  (y = getpary(win); x = getparx(win))
+
+#getcchar: Get a wide character string and rendition from cchar_t or set a cchar_t from a wide-character string
+proc getcchar*(wcval: ptr cchar_t, wch: WideCString, attrs: ptr attr_t, color_pair: ptr cshort, opts: pointer): ErrCode {.ncurses, importc: "getcchar".}
+proc setcchar*(wcval: ptr cchar_t, wch: WideCString, attrs: attr_t, color_pair: cshort, opts: pointer): ErrCode {.ncurses, importc: "setcchar".}
+
+#getch: get (or push back) characters from the terminal keyboard
+proc getch*(): ErrCode {.ncurses, importc: "getch".}
+  ## Read a character from the stdscr window.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc wgetch*(win: ptr Window): ErrCode {.ncurses, importc: "wgetch".}
+  ## Read a character from the specified window.
+  ## @Param: 'sourceWindow' the window to read a character from.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc mvgetch*(y,x: cint): ErrCode {.ncurses, importc: "mvgetch".}
+proc mvwgetch*(win: ptr Window, y,x: cint): ErrCode {.ncurses, importc: "mvwgetch".}
+proc ungetch*(ch: cint): ErrCode {.ncurses, importc: "ungetch".}
+proc has_key*(ch: cint): ErrCode {.ncurses, importc: "has_key".}
+
+#mouse: mouse interface
+proc has_mouse*(): bool {.ncurses, importc: "has_mouse".}
+proc getmouse*(event: ptr Mevent): ErrCode {.ncurses, importc: "getmouse".}
+proc ungetmouse*(event: ptr Mevent): ErrCode {.ncurses, importc: "ungetmouse".}
+proc mousemask*(newmask: mmask_t, oldmask: ptr mmask_t): mmask_t {.ncurses, importc: "mousemask".}
+proc wenclose*(win: ptr Window, y, x: cint): bool {.ncurses, importc: "wenclose".}
+proc mouse_trafo*(y,x: ptr cint, to_screen: bool): bool {.ncurses, importc: "mouse_trafo".}
+proc wmouse_trafo*(win: ptr Window, y,x: ptr cint, to_screen: bool): bool {.ncurses, importc: "wmouse_trafo".}
+proc mouseinterval*(erval: cint): ErrCode {.ncurses, importc: "mouseinterval".}
+
+#getstr: accept character strings from terminal keyboard
+proc getstr*(str: cstring): ErrCode {.ncurses, importc: "getstr".}
+  ## Reads the inputted characters into the provided string.
+  ## @Param: 'inputString' the variable to read the input into.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc getnstr*(str: cstring; n: cint): ErrCode {.ncurses, importc: "getnstr".}
+  ## Reads at most the specified number of characters into the provided string.
+  ## @Param: 'inputString' the variable to read the input into.
+  ## @Param: 'numberOfCharacters' the maximum number of characters to read.
+  ## @Returns: ERR on failure and OK upon successful completion.
+proc wgetstr*(win: ptr Window, str: cstring): ErrCode {.ncurses, importc: "wgetstr".}
+proc wgetnstr*(win: ptr Window, str: cstring, n: cint): ErrCode {.ncurses, importc: "wgetnstr".}
+proc mvgetstr*(y,x: cint, str: cstring): ErrCode {.ncurses, importc: "mvgetstr".}
+proc mvgetnstr*(y,x: cint, str: cstring, n: cint): ErrCode {.ncurses, importc: "mvgetnstr".}
+proc mvwgetstr*(win: ptr Window, y,x: cint, str: cstring): ErrCode {.ncurses, importc: "mvwgetstr".}
+proc mvwgetnstr*(win: ptr Window, y,x: cint, str: cstring, n: cint): ErrCode {.ncurses, importc: "mvwgetnstr".}
+
+#in_wch: extract a complex character and rendition from a window
+#https://invisible-island.net/ncurses/man/curs_in_wch.3x.html
+
+#in_wchstr: get an array of complex characters and renditions from a window
+#https://invisible-island.net/ncurses/man/curs_in_wchstr.3x.html
+
+#inch: get a character and attributes from a window
+#https://invisible-island.net/ncurses/man/curs_inch.3x.html
+
+#inchstr: get a string of characters (and attributes) from a window
+#https://invisible-island.net/ncurses/man/curs_inchstr.3x.html
+
+#instr: get a string of characters from a window
+#https://invisible-island.net/ncurses/man/curs_instr.3x.html
+
+#inwstr: get a string of wchar_t characters from a window
+#https://invisible-island.net/ncurses/man/curs_inwstr.3x.html
+
+#ins_wstr: insert a wide-character string into a window
+#https://invisible-island.net/ncurses/man/curs_ins_wstr.3x.html
+
+#ins_wch: insert a complex character and rendition into a window
+#https://invisible-island.net/ncurses/man/curs_ins_wch.3x.html
+
+#insch: insert a character before cursor in a window
+#https://invisible-island.net/ncurses/man/curs_insch.3x.html
+
+#insstr: insert string before cursor in a window
+#https://invisible-island.net/ncurses/man/curs_insstr.3x.html
+
+#opaque: window properties
+#https://invisible-island.net/ncurses/man/curs_opaque.3x.html
+
+#touch: refresh control routines
+#https://invisible-island.net/ncurses/man/curs_touch.3x.html
+
+#resizeterm: change the curses terminal size
+#https://invisible-island.net/ncurses/man/resizeterm.3x.html
+
+#key_defined: check if a keycode is defined
+#https://invisible-island.net/ncurses/man/key_defined.3x.html
+
+#keybound: return definition of keycode
+#https://invisible-island.net/ncurses/man/keybound.3x.html
+
+#keyok: enable or disable a keycode
+#https://invisible-island.net/ncurses/man/keyok.3x.html
+
+#print: ship binary data to printer
+#https://invisible-island.net/ncurses/man/curs_print.3x.html
+
+#move: move window cursor
+proc move*(y, x: cint): cint {.ncurses, importc: "move".}
+  ## Moves the cursor of stdscr to the specified coordinates.
+  ## @Param: 'y' the line to move the cursor to.
+  ## @Param: 'x' the column to move the cursor to.
+  ## @Returns: ERR on failure and OK upon successful completion.
+#MISSING: wmove
+#https://invisible-island.net/ncurses/man/curs_move.3x.html
+
+#printw: print formatted output in windows
+#https://invisible-island.net/ncurses/man/curs_printw.3x.html
+
+#scanw: convert formatted input from a window
+#https://invisible-island.net/ncurses/man/curs_scanw.3x.html
+
+#pad: create and display pads
+#https://invisible-island.net/ncurses/man/curs_pad.3x.html
+
+#scr_dump: read (write) a screen from (to) a file
+#https://invisible-island.net/ncurses/man/curs_scr_dump.3x.html
+
+#scroll: scroll a window
+#https://invisible-island.net/ncurses/man/curs_scroll.3x.html
+
+#termcap: direct interface to the terminfo capability database
+#https://invisible-island.net/ncurses/man/curs_termcap.3x.html
+
+#legacy_coding: override locale-encoding checks
+#https://invisible-island.net/ncurses/man/legacy_coding.3x.html
+
+#wresize: resize a curses window
+#https://invisible-island.net/ncurses/man/wresize.3x.html
 
 #proc *(): ErrCode {.ncurses, importc: "".}
 #proc *(): {.ncurses, importc: "".}
@@ -406,115 +687,31 @@ proc can_change_color*(): bool {.ncurses, importc: "can_change_color".}
     ## @Returns: true if the terminal supports colours and can change their definitions or
     ## false otherwise.
 
-
-proc color_content*() {.ncurses, importc: "".}
-
-proc copy*() {.ncurses, importc: "".}
-
-proc curses_version*() {.ncurses, importc: "".}
-
-proc del_curterm*() {.ncurses, importc: "".}
-proc delay_output*() {.ncurses, importc: "".}
-proc delch*(): cint {.ncurses, importc: "delch".}
-    ## Delete the character under the cursor in the stdscr.
-    ## @Returns: ERR on failure and OK upon successfully flashing.
-proc deleteln*(): cint {.ncurses, importc: "deleteln".}
-    ## Deletes the line under the cursor in the stdscr. All lines below the current line are moved up one line.
-    ## The bottom line of the window is cleared and the cursor position does not change.
-    ## @Returns: ERR on failure and OK upon successful completion.
-proc delscreen*() {.ncurses, importc: "".}
-proc delwin*(win: ptr window): cint {.ncurses, importc: "delwin".}
-proc derwin*() {.ncurses, importc: "".}
-proc doupdate*() {.ncurses, importc: "".}
-proc dupwin*() {.ncurses, importc: "".}
-proc echo*() {.ncurses, importc: "".}
-proc echo_whchar*() {.ncurses, importc: "".}
-proc echochar*() {.ncurses, importc: "".}
-proc endwin*(): cint {.ncurses, importc: "endwin".}
-    ## A program should always call endwin before exiting or escaping from curses mode temporarily. This routine
-    ## restores tty modes, moves the cursor to the lower left-hand corner of the screen and resets the terminal into the
-    ## proper non-visual mode. Calling refresh or doupdate after a temporary escape causes the program to resume visual mode.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc extended_color_content*() {.ncurses, importc: "".}
-proc extended_pair_content*() {.ncurses, importc: "".}
-proc extended_slk_color*() {.ncurses, importc: "".}
-proc filter*() {.ncurses, importc: "".}
-
-proc flushinp*() {.ncurses, importc: "".}
-
-proc get_wch*() {.ncurses, importc: "".}
-proc get_wstr*() {.ncurses, importc: "".}
-proc getattrs*(a2: ptr window): cint {.ncurses, importc: "getattrs".}
-proc getbegx*(a2: ptr window): cint {.ncurses, importc: "getbegx".}
-proc getbegy*(a2: ptr window): cint {.ncurses, importc: "getbegy".}
-proc getbegyx*() {.ncurses, importc: "".}
-proc getcurx*(a2: ptr window): cint {.ncurses, importc: "getcurx".}
-proc getcury*(a2: ptr window): cint {.ncurses, importc: "getcury".}
-proc getmaxx*(a2: ptr window): cint {.ncurses, importc: "getmaxx".}
-proc getmaxy*(a2: ptr window): cint {.ncurses, importc: "getmaxy".}
-proc getmaxyx*(win: ptr window, y, x: var int) =
-    ## retrieves the size of the specified window in the provided y and x parameters.
-    ## @Param: 'win' the window to measure.
-    ## @Param: 'y' stores the height of the window.
-    ## @Param: 'x' stores the width of the window.
-    y = getmaxy(win)
-    x = getmaxx(win)
-proc getparx*(a2: ptr window): cint {.ncurses, importc: "getparx".}
-proc getpary*(a2: ptr window): cint {.ncurses, importc: "getpary".}
 #proc *() {.ncurses, importc: "".}
-
-proc has_mouse*(): bool {.ncurses, importc: "has_mouse".}
-proc getmouse*(a2: ptr MEVENT): cint {.ncurses, importc: "getmouse".}
-proc ungetmouse*(a2: ptr MEVENT): cint {.ncurses, importc: "ungetmouse".}
-proc mousemask*(a2: mmask_t; a3: ptr mmask_t): mmask_t {.ncurses, importc: "mousemask".}
-proc wenclose*(a2: ptr window; a3: cint; a4: cint): bool {.ncurses, importc: "wenclose".}
-proc mouseinterval*(a2: cint): cint {.ncurses, importc: "mouseinterval".}
-proc wmouse_trafo*(a2: ptr window; a3: ptr cint; a4: ptr cint; a5: bool): bool {.ncurses, importc: "wmouse_trafo".}
-proc mouse_trafo*(a2: ptr cint; a3: ptr cint; a4: bool): bool {.ncurses, importc: "mouse_trafo".}
 
 # These functions are not in X/Open, but we use them in macro definitions:
 
 
 
-proc newwin*(lines, columns, begin_y, begin_x: int): ptr window {.ncurses, importc: "newwin".}
+proc newwin*(lines, columns, begin_y, begin_x: int): ptr Window {.ncurses, importc: "newwin".}
 
-proc mvwin*(win: ptr window, y, x: int): cint {.ncurses, importc: "mvwin".}
+proc mvwin*(win: ptr Window, y, x: int): cint {.ncurses, importc: "mvwin".}
 
-proc subpad*(orig: ptr window, lines, columns, begin_y, begin_x: int): ptr window {.ncurses, importc: "subpad".}
+proc subpad*(orig: ptr Window, lines, columns, begin_y, begin_x: int): ptr Window {.ncurses, importc: "subpad".}
 
-proc subwin*(orig: ptr window, lines, columns, begin_y, begin_x: int): ptr window {.ncurses, importc: "subwin".}
+proc subwin*(orig: ptr Window, lines, columns, begin_y, begin_x: int): ptr Window {.ncurses, importc: "subwin".}
 
-proc scroll*(win: ptr window): cint {.ncurses, importc: "scroll".}
+proc scroll*(win: ptr Window): cint {.ncurses, importc: "scroll".}
 
-proc wrefresh*(win: ptr window): cint {.ncurses, importc: "wrefresh".}
+proc wattron*(win: ptr Window, attributes: int64): cint {.ncurses, importc: "wattron".}
 
-proc wattron*(win: ptr window, attributes: int64): cint {.ncurses, importc: "wattron".}
+proc wattroff*(win: ptr Window, attributes: int64): cint {.ncurses, importc: "wattroff".}
 
-proc wattroff*(win: ptr window, attributes: int64): cint {.ncurses, importc: "wattroff".}
+proc wresize*(win: ptr Window, line, column: int): cint {.ncurses, importc: "wresize".}
 
-proc wresize*(win: ptr window, line, column: int): cint {.ncurses, importc: "wresize".}
-
-proc wmove*(win: ptr window, y, x: int): cint {.ncurses, importc: "wmove".}
-
-proc wprintw*(win: ptr window, formattedString: cstring): cint {.ncurses, importc: "wprintw".}
+proc wprintw*(win: ptr Window, formattedString: cstring): cint {.ncurses, importc: "wprintw".}
 
 proc set_escdelay*(size: int): cint {.ncurses, importc: "set_escdelay".}
-
-proc getch*(): cint {.ncurses, importc: "getch".}
-    ## Read a character from the stdscr window.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc getnstr*(inputString: cstring; numberOfCharacters: int): cint {.ncurses, importc: "getnstr".}
-    ## Reads at most the specified number of characters into the provided string.
-    ## @Param: 'inputString' the variable to read the input into.
-    ## @Param: 'numberOfCharacters' the maximum number of characters to read.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc getstr*(inputString: cstring): cint {.ncurses, importc: "getstr".}
-    ## Reads the inputted characters into the provided string.
-    ## @Param: 'inputString' the variable to read the input into.
-    ## @Returns: ERR on failure and OK upon successful completion.
 
 proc has_colors*(): bool {.ncurses, importc: "has_colors".}
     ## Used to determine if the terminal can manipulate colours.
@@ -529,27 +726,9 @@ proc init_pair*(pair: cshort; foreground: cshort; background: cshort): cint {.nc
     ## @Param: 'background': the background colour number.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc initscr*(): ptr window {.ncurses, importc: "initscr".}
-    ## Usually the first curses routine to be called when initialising a program
-    ## The initscr code determines the terminal type and initialises  all curses data structures.  initscr also causes the
-    ## first call to refresh to clear the screen.
-    ## @Returns: A pointer to stdscr is returned if the operation is successful.
-    ## @Note: If errors occur, initscr writes an appropriate error message to
-    ## standard error and exits.
-
 proc insch*(character: chtype): cint {.ncurses, importc: "insch".}
     ## Inserts a character before the cursor in the stdscr.
     ## @Param: 'character' the character to insert.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc insertln*(): cint {.ncurses, importc: "insertln".}
-    ## Inserts a blank line above the current line in stdscr and the bottom line is lost.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc move*(y: int; x: int): cint {.ncurses, importc: "move".}
-    ## Moves the cursor of stdscr to the specified coordinates.
-    ## @Param: 'y' the line to move the cursor to.
-    ## @Param: 'x' the column to move the cursor to.
     ## @Returns: ERR on failure and OK upon successful completion.
 
 proc mvaddch*(y: int; x: int; character: chtype): cint {.ncurses, importc: "mvaddch".}
@@ -567,7 +746,7 @@ proc mvprintw*(y: int; x: int; formattedString: cstring): cint {.varargs, ncurse
     ## @Param: 'formattedString' the string with formatting to be output to stdscr.
     ## @Returns: ERR on failure and OK upon successful completion.
 
-proc mvwprintw*(destinationWindow: ptr window; y: int; x: int; formattedString: cstring): cint {.varargs, ncurses, importc: "mvwprintw".}
+proc mvwprintw*(destinationWindow: ptr Window; y: int; x: int; formattedString: cstring): cint {.varargs, ncurses, importc: "mvwprintw".}
     ## Prints out a formatted string to the specified window at the specified row and column.
     ## @Param: 'destinationWindow' the window to write the string to.
     ## @Param: 'y' the line to move the cursor to.
@@ -578,10 +757,6 @@ proc mvwprintw*(destinationWindow: ptr window; y: int; x: int; formattedString: 
 proc printw*(formattedString: cstring): cint {.varargs, ncurses, importc: "printw".}
     ## Prints out a formatted string to the stdscr.
     ## @Param: 'formattedString' the string with formatting to be output to stdscr.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc refresh*(): cint {.ncurses, importc: "refresh".}
-    ## Must be called to get actual output to the terminal. refresh uses stdscr has the default window.
     ## @Returns: ERR on failure and OK upon successful completion.
 
 proc scanw*(formattedInput: cstring): int {.varargs, ncurses, importc: "scanw".}
@@ -595,19 +770,6 @@ proc start_color*(): cint {.ncurses, importc: "start_color".}
     ## terminal was just turned on.
     ## @Note: It is good practice to call this routine right after initscr. It must be
     ## called before any other colour manipulating routines.
-
-proc wgetch*(sourceWindow: ptr window): cint {.ncurses, importc: "wgetch".}
-    ## Read a character from the specified window.
-    ## @Param: 'sourceWindow' the window to read a character from.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc getyx*(win: ptr window, y, x: var int) =
-    ## Reads the logical cursor location from the specified window.
-    ## @Param: 'win' the window to get the cursor location from.
-    ## @Param: 'y' stores the height of the window.
-    ## @Param: 'x' stores the width of the window.
-    y = getcury(win)
-    x = getcurx(win)
 
 # mouse interface
 template NCURSES_MOUSE_MASK(b, m: untyped): untyped = ((m) shl (((b) - 1) * 5))
@@ -759,4 +921,4 @@ const
   KEY_RESIZE*    = 0o632           # Terminal resize event
   KEY_EVENT*     = 0o633           # We were interrupted by an event
 
-template KEY_F*(n: untyped): untyped= (KEY_F0+(n))    # Value of function key n
+template KEY_F*(n: untyped): untyped= (KEY_F0+(n)) ## Value of function key n
