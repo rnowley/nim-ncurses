@@ -1,4 +1,5 @@
 {.deadCodeElim: on.}
+from sugar import `->`
 when defined(windows):
  const libncurses* = "libncurses.dll"
 elif defined(macosx):
@@ -8,19 +9,21 @@ else:
 {.pragma: ncurses, discardable, cdecl, dynlib: libncurses.}
 
 type
-  chtype*  = cuint #32 or 64
+  # 32 or 64
+  chtype*  = cuint ## Holds a character and possibly an attribute
   mmask_t* = uint32
-  attr_t*  = chtype # ...must be at least as wide as chtype
+  # ...must be at least as wide as chtype
+  attr_t*  = chtype ## Attribute
 
-  cchar_t* = object # (complex char)
+  cchar_t* = object #E complex char
     attr: attr_t
     chars: WideCString #5
     ext_color: cint
 
-  ldat = object # (line data)
+  ldat = object ## line data
   
   window* = win_st
-  win_st = object # (window struct)
+  win_st = object ## window struct
     cury*, curx*: cshort      # current cursor position
     
     # window location and size
@@ -60,19 +63,27 @@ type
     bkgrnd*: cchar_t          # current background char/attribute pair
     color*: cint              # current color-pair for non-space character
   
-  pdat = object # (pad data)
+  pdat = object ## pad data
     pad_y*,      pad_x*:     cshort
     pad_top*,    pad_left*:  cshort
     pad_bottom*, pad_right*: cshort
 
-  MEVENT* = object # (mouse event)
+  MEVENT* = object ## mouse event
     id*: cshort               # ID to distinguish multiple devices
     x*, y*, z*: cint          # event coordinates (character-cell)
     bstate*: mmask_t          # button state bits
 
 var COLORS* {.importc: "COLORS", dynlib: libncurses.}: int
 var COLOR_PAIRS* {.importc: "COLOR_PAIRS", dynlib: libncurses.}: int
-
+const  # colors
+  COLOR_BLACK*   = 0
+  COLOR_RED*     = 1
+  COLOR_GREEN*   = 2
+  COLOR_YELLOW*  = 3
+  COLOR_BLUE*    = 4
+  COLOR_MAGENTA* = 5
+  COLOR_CYAN*    = 6
+  COLOR_WHITE*   = 7
 const
   ERR* = (-1)
   OK*  = (0)
@@ -80,10 +91,8 @@ const
 type ErrCode = cint ## Returns ERR upon failure or OK on success.
 
 template NCURSES_CAST(`type`, value: untyped): untyped = (`type`)(value)
-
 template COLOR_PAIR*(n: untyped): untyped =
  NCURSES_BITS((n), 0'i64)
-
 template PAIR_NUMBER*(a: untyped): untyped =
  (NCURSES_CAST(int, ((NCURSES_CAST(uint64, (a)) and A_COLOR) shr
      NCURSES_ATTR_SHIFT)))
@@ -310,46 +319,76 @@ proc nocbreak*(): ErrCode {.ncurses, importc: "nocbreak".}
 proc noecho*(): ErrCode {.ncurses, importc: "noecho".}
 proc onecho*(): ErrCode {.ncurses, importc: "echo".}
   ## Previously `echo`, but this being a Nim's print function, is changed to `onecho`
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
-proc *(): ErrCode {.ncurses, importc: "".}
+proc halfdelay*(tenths: cint): ErrCode {.ncurses, importc: "halfdelay".}
+proc keypad*(win: ptr window, bf: bool): cint {.ncurses, importc: "keypad".}
+proc meta*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "meta".}
+proc nodelay*(win: ptr window, bf: bool): cint {.ncurses, importc: "nodelay".}
+proc raw*(): ErrCode {.ncurses, importc: "raw".}
+proc noraw*(): ErrCode {.ncurses, importc: "noraw".}
+proc noqiflush*(): void {.ncurses, importc: "noqiflush".}
+proc qiflush*(): void {.ncurses, importc: "qiflush".}
+proc notimeout*(): ErrCode {.ncurses, importc: "notimeout".}
+proc timeout*(delay: cint): void {.ncurses, importc: "timeout".}
+proc wtimeout*(win: ptr window, delay: cint): void {.ncurses, importc: "wtimeout".}
+proc typeahead*(fd: cint): ErrCode {.ncurses, importc: "typeahead".}
 
+#clear: Clear all or part of a window
+proc erase*(): ErrCode {.ncurses, importc: "erase".}
+proc werase*(win: ptr window): ErrCode {.ncurses, importc: "werase".}
+proc clear*(): ErrCode {.ncurses, importc: "clear".}
+proc wclear*(win: ptr window): ErrCode {.ncurses, importc: "wclear".}
+proc clrtobot*(): ErrCode {.ncurses, importc: "clrtobot".}
+proc wclrtobot*(win: ptr window): ErrCode {.ncurses, importc: "wclrtobot".}
+proc clrtoeol*(): ErrCode {.ncurses, importc: "clrtoeol".}
+proc wclrtoeol*(win: ptr window): ErrCode {.ncurses, importc: "wclrtoeol".}
 
+#outopts: Output options
+proc clearok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "clearok".}
+proc idlok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "idlok".}
+proc idcok*(win: ptr window, bf: bool): void {.ncurses, importc: "idcok".}
+proc immedok*(win: ptr window, bf: bool): void {.ncurses, importc: "immedok".}
+proc leaveok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "leaveok".}
+proc setscrreg*(top, bot: cint): ErrCode {.ncurses, importc: "setscrreg".}
+proc wsetscrreg*(win: ptr window, top, bot: cint): ErrCode {.ncurses, importc: "wsetscrreg".}
+proc scrollok*(win: ptr window, bf: bool): ErrCode {.ncurses, importc: "scrollok".}
+proc nl*(): ErrCode {.ncurses, importc: "nl".}
+proc nonl*(): ErrCode {.ncurses, importc: "nonl".}
 
+#overlay: overlay and manipulate overlapped windows
+proc overlay*(srcwin, dstwin: ptr window): ErrCode {.ncurses, importc: "overlay".}
+proc overwrite*(srcwin, dstwin: ptr window): ErrCode {.ncurses, importc: "overwrite".}
+proc copywin*(srcwin, dstwin: ptr window,
+  sminrow, smincol,
+  dminrow, dmincol,
+  dmaxrow, dmaxcol: cint
+): ErrCode {.ncurses, importc: "copywin".}
 
+#kernel: low-level routines (all except cur_set will always return OK)
+proc def_prog_mode*(): ErrCode {.ncurses, importc: "def_prog_mode".}
+proc def_shell_mode*(): ErrCode {.ncurses, importc: "def_shell_mode".}
+proc reset_prog_mode*(): ErrCode {.ncurses, importc: "reset_prog_mode".}
+proc reset_shell_mode*(): ErrCode {.ncurses, importc: "reset_shell_mode".}
+proc resetty*(): ErrCode {.ncurses, importc: "resetty".}
+proc savetty*(): ErrCode {.ncurses, importc: "savetty".}
+proc getsyx*(y,x: cint): void {.ncurses, importc: "getsyx".}
+proc setsyx*(y,x: cint): void {.ncurses, importc: "setsyx".}
+proc ripoffline*(line: cint, init: proc(win: ptr window, cols: cint): cint): ErrCode {.ncurses, importc: "ripoffline".}
+proc curs_set*(visibility: cint): cint {.ncurses, importc: "curs_set".}
+proc napms*(ms: cint): cint {.ncurses, importc: "napms".}
+    ## Used to sleep for the specified milliseconds.
+    ## @Params: 'milliseconds' the number of milliseconds to sleep for.
+    ## @Returns: ERR on failure and OK upon successful completion.
 
+#extend: misc extensions
+proc curses_version*(): cstring {.ncurses, importc: "curses_version".}
+proc use_extended_names*(enable: bool): cint {.ncurses, importc: "use_extended_names".}
 
+#define_key: define a keycode
+proc define_key*(definition: cstring, keycode: cint): ErrCode {.ncurses, importc: "define_key".}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#terminfo: interfaces to terminfo database
+var
+  boolnames {.ncurses, importc: "boolnames".}: cstringArray
 
 
 
@@ -359,7 +398,8 @@ proc *(): ErrCode {.ncurses, importc: "".}
 
 #proc *(): ErrCode {.ncurses, importc: "".}
 #proc *(): {.ncurses, importc: "".}
-
+# https://invisible-island.net/ncurses/man/ncurses.3x.html
+# https://invisible-island.net/ncurses/man/curs_outopts.3x.html #[ Ended Here ]#
 
 proc can_change_color*(): bool {.ncurses, importc: "can_change_color".}
     ## Used to determine if the terminal supports colours and can change their definitions.
@@ -367,19 +407,12 @@ proc can_change_color*(): bool {.ncurses, importc: "can_change_color".}
     ## false otherwise.
 
 
-proc clear*(): cint {.ncurses, importc: "clear".}
-proc clearok*() {.ncurses, importc: "".}
-proc clrtobot*() {.ncurses, importc: "".}
-proc clrtoeol*() {.ncurses, importc: "".}
 proc color_content*() {.ncurses, importc: "".}
 
-proc copywin*() {.ncurses, importc: "".}
 proc copy*() {.ncurses, importc: "".}
-proc curs_set*(visibility: int): cint {.ncurses, importc: "curs_set".}
+
 proc curses_version*() {.ncurses, importc: "".}
-proc def_prog_mode*(): cint {.ncurses, importc: "def_prog_mode".}
-proc def_shell_mode*() {.ncurses, importc: "".}
-proc define_key*() {.ncurses, importc: "".}
+
 proc del_curterm*() {.ncurses, importc: "".}
 proc delay_output*() {.ncurses, importc: "".}
 proc delch*(): cint {.ncurses, importc: "delch".}
@@ -402,7 +435,6 @@ proc endwin*(): cint {.ncurses, importc: "endwin".}
     ## restores tty modes, moves the cursor to the lower left-hand corner of the screen and resets the terminal into the
     ## proper non-visual mode. Calling refresh or doupdate after a temporary escape causes the program to resume visual mode.
     ## @Returns: ERR on failure and OK upon successful completion.
-proc erase*(): cint {.ncurses, importc: "erase".}
 
 proc extended_color_content*() {.ncurses, importc: "".}
 proc extended_pair_content*() {.ncurses, importc: "".}
@@ -453,15 +485,7 @@ proc subpad*(orig: ptr window, lines, columns, begin_y, begin_x: int): ptr windo
 
 proc subwin*(orig: ptr window, lines, columns, begin_y, begin_x: int): ptr window {.ncurses, importc: "subwin".}
 
-proc keypad*(win: ptr window, bf: bool): cint {.ncurses, importc: "keypad".}
-
-proc scrollok*(win: ptr window, bf: bool): cint {.ncurses, importc: "scrollok".}
-
 proc scroll*(win: ptr window): cint {.ncurses, importc: "scroll".}
-
-proc werase*(win: ptr window): cint {.ncurses, importc: "werase".}
-
-proc wclear*(win: ptr window): cint {.ncurses, importc: "wclear".}
 
 proc wrefresh*(win: ptr window): cint {.ncurses, importc: "wrefresh".}
 
@@ -476,14 +500,6 @@ proc wmove*(win: ptr window, y, x: int): cint {.ncurses, importc: "wmove".}
 proc wprintw*(win: ptr window, formattedString: cstring): cint {.ncurses, importc: "wprintw".}
 
 proc set_escdelay*(size: int): cint {.ncurses, importc: "set_escdelay".}
-
-proc reset_prog_mode*(): cint {.ncurses, importc: "reset_prog_mode".}
-
-proc raw*(): cint {.ncurses, importc: "raw".}
-
-proc timeout*(delay: cint) {.ncurses, importc: "timeout".}
-
-proc nodelay*(win: ptr window, bf: bool): cint {.ncurses, importc: "nodelay".}
 
 proc getch*(): cint {.ncurses, importc: "getch".}
     ## Read a character from the stdscr window.
@@ -557,11 +573,6 @@ proc mvwprintw*(destinationWindow: ptr window; y: int; x: int; formattedString: 
     ## @Param: 'y' the line to move the cursor to.
     ## @Param: 'x' the column to move the cursor to.
     ## @Param: 'formattedString' the string with formatting to be output to stdscr.
-    ## @Returns: ERR on failure and OK upon successful completion.
-
-proc napms*(milliseconds: int): cint {.ncurses, importc: "napms".}
-    ## Used to sleep for the specified milliseconds.
-    ## @Params: 'milliseconds' the number of milliseconds to sleep for.
     ## @Returns: ERR on failure and OK upon successful completion.
 
 proc printw*(formattedString: cstring): cint {.varargs, ncurses, importc: "printw".}
@@ -747,15 +758,5 @@ const
   KEY_MOUSE*     = 0o631           # Mouse event has occurred
   KEY_RESIZE*    = 0o632           # Terminal resize event
   KEY_EVENT*     = 0o633           # We were interrupted by an event
-
-  # colors
-  COLOR_BLACK*   = 0
-  COLOR_RED*     = 1
-  COLOR_GREEN*   = 2
-  COLOR_YELLOW*  = 3
-  COLOR_BLUE*    = 4
-  COLOR_MAGENTA* = 5
-  COLOR_CYAN*    = 6
-  COLOR_WHITE*   = 7
 
 template KEY_F*(n: untyped): untyped= (KEY_F0+(n))    # Value of function key n
