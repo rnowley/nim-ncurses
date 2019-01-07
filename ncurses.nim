@@ -433,10 +433,10 @@ proc define_key*(definition: cstring, keycode: cint): ErrCode {.cdecl, importc, 
 
 #terminfo: interfaces to terminfo database
 var
-  cur_term: ptr Terminal
-  boolnames, boolcodes, boolfnames: cstringArray
-  numnames, numcodes, numfnames: cstringArray
-  strnames, strcodes, strfnames: cstringArray
+  cur_term*: ptr Terminal
+  boolnames*, boolcodes*, boolfnames*: cstringArray
+  numnames*, numcodes*, numfnames*: cstringArray
+  strnames*, strcodes*, strfnames*: cstringArray
 proc setupterm*(term: cstring; filedes: cint; errret: ptr cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc setterm*(term: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc set_curterm*(nterm: ptr Terminal): ptr Terminal {.cdecl, importc, discardable, dynlib: libncurses.}
