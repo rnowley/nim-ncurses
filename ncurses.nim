@@ -72,17 +72,17 @@ type
     bstate*: mmask_t          # button state bits
   
   #not ncurses but used to make things easier
-  ErrCode = cint ## Returns ERR upon failure or OK on success.
+  ErrCode = distinct cint ## Returns ERR upon failure or OK on success.
   PWindow = ptr Window
   PScreen = ptr Screen
 
 const
   ERR* = (-1)
   OK*  = (0)
-  NCURSES_ATTR_SHIFT = 8'i64
-template NCURSES_BITS(mask, shift: untyped): untyped =
-   (NCURSES_CAST(int64, (mask)) shl ((shift) + NCURSES_ATTR_SHIFT))
+  NCURSES_ATTR_SHIFT = 8
 template NCURSES_CAST(`type`, value: untyped): untyped = (`type`)(value)
+template NCURSES_BITS(mask, shift: untyped): untyped =
+  (NCURSES_CAST(chtype, (mask)) shl ((shift) + NCURSES_ATTR_SHIFT))
 
 #color: color manipulation routines
 #https://invisible-island.net/ncurses/man/curs_color.3x.html
@@ -104,7 +104,7 @@ var
     ## terminal can support.
 template COLOR_PAIR*(n: untyped): untyped = NCURSES_BITS((n), 0'i64)
 template PAIR_NUMBER*(a: untyped): untyped =
-  (NCURSES_CAST(int, ((NCURSES_CAST(uint64, (a)) and A_COLOR) shr
+  (NCURSES_CAST(int, ((NCURSES_CAST(cuint, (a)) and A_COLOR) shr
     NCURSES_ATTR_SHIFT)))
 
 proc start_color*(): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -139,10 +139,10 @@ proc reset_color_pairs*(): void {.cdecl, importc, discardable, dynlib: libncurse
 proc get_escdelay*(): cint {.cdecl, importc, discardable, dynlib: libncurses.}
 proc set_escdelay*(size: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc set_tabsize*(size: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
-#proc use_screen*(scr: PScreen, scr_cb: proc(scr: PScreen, pt: pointer): cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+proc use_screen*(scr: PScreen, scr_cb: proc(scr: PScreen, pt: pointer): cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc use_window*(win: PWindow, win_cb: proc(win: PWindow, pt: pointer): cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
-#add_wchs: Adding complex characters to a window
+#add_wch: Adding complex characters to a window
 proc add_wch*(wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc wadd_wch*(win: PWindow, wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvadd_wch*(y, x: cint, wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -152,7 +152,7 @@ proc wech_wchar*(win: PWindow, wch: ptr cchar_t): ErrCode {.cdecl, importc, disc
 
 #add_wchstr: Adding an array of complex characters to a window
 proc add_wchstr*(wchstr: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
-proc add_wchnstr*(wchstr: ptr cchar_t, numberOfCharacters: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+proc add_wchnstr*(wchstr: ptr cchar_t, n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc wadd_wchstr*(win: PWindow, wchstr: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc wadd_wchnstr*(win: PWindow, wchstr: ptr cchar_t, n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvadd_wchstr*(y, x: cint, wchstr: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -233,24 +233,26 @@ proc assume_default_colors*(fg, bg: cint): ErrCode {.cdecl, importc, discardable
 #attr: Character and attribute control routines
 const
   u1: uint = 1
-  A_NORMAL*      = (u1 - u1)            #0
-  A_BOLD*        = NCURSES_BITS(not (u1 - u1), 0)   #2097152
-  A_UNDERLINE*   = NCURSES_BITS((u1 shl 8) - u1, 0) #131072
-  A_ATTRIBUTES*  = NCURSES_BITS(u1,  8) #4294967040'i64
-  A_CHAR_TEXT*   = NCURSES_BITS(u1,  9) #255
-  A_REVERSE*     = NCURSES_BITS(u1, 10) #262144
-  A_BLINK*       = NCURSES_BITS(u1, 11) #524288
-  A_DIM*         = NCURSES_BITS(u1, 12) #1048576
-  A_ALT_CHARSET* = NCURSES_BITS(u1, 13) #4194304
-  A_INVIS*       = NCURSES_BITS(u1, 14) #8388608
-  A_PROTECT*     = NCURSES_BITS(u1, 15) #16777216
-  A_HORIZONTAL*  = NCURSES_BITS(u1, 16) #33554432
-  A_LEFT*        = NCURSES_BITS(u1, 17) #67108864
-  A_LOW*         = NCURSES_BITS(u1, 18) #34217728
-  A_RIGHT*       = NCURSES_BITS(u1, 19) #268435456
-  A_TOP*         = NCURSES_BITS(u1, 20) #536870912
-  A_VERTICAL*    = NCURSES_BITS(u1, 21) #1073741824
-  A_ITALIC*      = NCURSES_BITS(u1, 22) #2147483648
+  A_NORMAL*      = (u1 - u1)
+  A_ATTRIBUTES*  = NCURSES_BITS(not (u1 - u1),  0)
+  A_CHAR_TEXT*   = (NCURSES_BITS(u1, 0) - u1.chtype)
+  A_COLOR*       = NCURSES_BITS((u1 shl 8) - u1, 0)
+  A_STANDOUT*    = NCURSES_BITS(u1, 8)
+  A_UNDERLINE*   = NCURSES_BITS(u1, 9)
+  A_REVERSE*     = NCURSES_BITS(u1, 10)
+  A_BLINK*       = NCURSES_BITS(u1, 11)
+  A_DIM*         = NCURSES_BITS(u1, 12)
+  A_BOLD*        = NCURSES_BITS(u1, 13)
+  A_ALT_CHARSET* = NCURSES_BITS(u1, 14)
+  A_INVIS*       = NCURSES_BITS(u1, 15)
+  A_PROTECT*     = NCURSES_BITS(u1, 16)
+  A_HORIZONTAL*  = NCURSES_BITS(u1, 17)
+  A_LEFT*        = NCURSES_BITS(u1, 18)
+  A_LOW*         = NCURSES_BITS(u1, 19)
+  A_RIGHT*       = NCURSES_BITS(u1, 20)
+  A_TOP*         = NCURSES_BITS(u1, 21)
+  A_VERTICAL*    = NCURSES_BITS(u1, 22)
+  A_ITALIC*      = NCURSES_BITS(u1, 23)
 
 proc attr_get*(attrs: ptr attr_t, pair: ptr cshort, opts: pointer): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc wattr_get*(win: PWindow, attrs: ptr attr_t, pair: ptr cshort, opts: pointer): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -489,7 +491,7 @@ proc insertln*(): cint {.cdecl, importc, discardable, dynlib: libncurses.}
   ## @Returns: ERR on failure and OK upon successful completion.
 proc winsertln*(win: PWindow): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
-#iniscr: screen initialization and manipulation routines
+#initscr: screen initialization and manipulation routines
 proc initscr*(): PWindow {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Usually the first curses routine to be called when initialising a program
   ## The initscr code determines the terminal type and initialises  all curses data structures.  initscr also causes the
@@ -504,7 +506,7 @@ proc endwin*(): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
   ## @Returns: ERR on failure and OK upon successful completion.
 proc isendwin*(): bool {.cdecl, importc, discardable, dynlib: libncurses.}
 proc newterm*(`type`: cstring, outfd, infd: File): PScreen {.cdecl, importc, discardable, dynlib: libncurses.}
-proc set_term*(`new`: PScreen): ptr Screen {.cdecl, importc, discardable, dynlib: libncurses.}
+proc set_term*(`new`: PScreen): PScreen {.cdecl, importc, discardable, dynlib: libncurses.}
 proc delscreen*(sp: PScreen): void {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #window: create a window
@@ -1077,5 +1079,4 @@ const
   KEY_MOUSE*     = 0o631           # Mouse event has occurred
   KEY_RESIZE*    = 0o632           # Terminal resize event
   KEY_EVENT*     = 0o633           # We were interrupted by an event
-
 template KEY_F*(n: untyped): untyped= (KEY_F0+(n)) ## Value of function key n
