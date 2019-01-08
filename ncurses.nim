@@ -18,8 +18,8 @@ type
     ext_color: cint
 
   ldat = object ## line data
-  Screen* {.importc.} = object
-  Terminal* {.importc.} = object
+  Screen* = object
+  Terminal* = object
   Window* = object ## window struct
     cury*, curx*: cshort      # current cursor position
     
@@ -72,9 +72,9 @@ type
     bstate*: mmask_t          # button state bits
   
   #not ncurses but used to make things easier
-  ErrCode = distinct cint ## Returns ERR upon failure or OK on success.
-  PWindow = ptr Window
-  PScreen = ptr Screen
+  ErrCode* = distinct cint ## Returns ERR upon failure or OK on success.
+  PWindow* = ptr Window
+  PScreen* = ptr Screen
 
 const
   ERR* = (-1)
