@@ -7,59 +7,57 @@ else:
   const libncurses* = "libncursesw.so"
 
 type
-  # 32 or 64
   chtype*  = cuint ## Holds a character and possibly an attribute
-  # ...must be at least as wide as chtype
-  attr_t*  = chtype ## Attribute
+  attr_t*  = chtype ## Attribute type
 
-  cchar_t* = object #E complex char
+  cchar_t* = object ## Complex char
     attr: attr_t
     chars: WideCString #5
     ext_color: cint
 
-  ldat = object ## line data
+  ldat = object ## Holds line data
   Screen* = object
   Terminal* = object
-  Window* = object ## window struct
-    cury*, curx*: cshort      # current cursor position
+  Window* = object ## Holds window data
+    cury, curx: cshort       # current cursor position
     
     # window location and size
-    maxy*, maxx*: cshort      # maximums of x and y, NOT window size
-    begy*, begx*: cshort      # screen coords of upper-left-hand corner
-    flags*: cshort            # window state flags
+    maxy, maxx: cshort       # maximums of x and y, NOT window size
+    begy, begx: cshort       # screen coords of upper-left-hand corner
+    flags: cshort            # window state flags
     
     # attribute tracking
-    attrs*: attr_t            # current attribute for non-space character
-    bkgd*: chtype             # current background char/attribute pair
+    attrs: attr_t            # current attribute for non-space character
+    bkgd: chtype             # current background char/attribute pair
     
     # option values set by user
-    notimeout*: bool          # no time out on function-key entry?
-    clear*: bool              # consider all data in the window invalid?
-    leaveok*: bool            # OK to not reset cursor on exit?
-    scroll*: bool             # OK to scroll this window?
-    idlok*: bool              # OK to use insert/delete line?
-    idcok*: bool              # OK to use insert/delete char?
-    immed*: bool              # window in immed mode? (not yet used)
-    sync*: bool               # window in sync mode?
-    use_keypad*: bool         # process function keys into KEY_ symbols?
-    delay*: cint              # 0 = nodelay, <0 = blocking, >0 = delay
+    notimeout: bool          # no time out on function-key entry?
+    clear: bool              # consider all data in the window invalid?
+    leaveok: bool            # OK to not reset cursor on exit?
+    scroll: bool             # OK to scroll this window?
+    idlok: bool              # OK to use insert/delete line?
+    idcok: bool              # OK to use insert/delete char?
+    immed: bool              # window in immed mode? (not yet used)
+    sync: bool               # window in sync mode?
+    use_keypad: bool         # process function keys into KEY_ symbols?
+    delay: cint              # 0 = nodelay, <0 = blocking, >0 = delay
     
-    line*: ptr ldat           # the actual line data
+    line: ptr ldat           # the actual line data
     
     # global screen state
-    regtop*: cshort           # top line of scrolling region
-    regbottom*: cshort        # bottom line of scrolling region
+    regtop: cshort           # top line of scrolling region
+    regbottom: cshort        # bottom line of scrolling region
     
     # these are used only if this is a sub-window
-    pary*, parx*: cint        # y, x coordinates of this window in parent
-    parent*: PWindow       # pointer to parent if a sub-window
+    pary, parx: cint         # y, x coordinates of this window in parent
+    parent: PWindow          # pointer to parent if a sub-window
     
     # these are used only if this is a pad
-    pad*: pdat
-    yoffset*: cshort          # real begy is _begy + _yoffset
-    bkgrnd*: cchar_t          # current background char/attribute pair
-    color*: cint              # current color-pair for non-space character
-  
+    pad: pdat
+    yoffset: cshort          # real begy is _begy + _yoffset
+    bkgrnd: cchar_t          # current background char/attribute pair
+    color: cint              # current color-pair for non-space character
+
   pdat = object ## pad data
     pad_y*,      pad_x*:     cshort
     pad_top*,    pad_left*:  cshort
@@ -67,9 +65,9 @@ type
 
   mmask_t* = uint32
   Mevent* = object ## mouse event
-    id*: cshort               # ID to distinguish multiple devices
-    x*, y*, z*: cint          # event coordinates (character-cell)
-    bstate*: mmask_t          # button state bits
+    id*: cshort              # ID to distinguish multiple devices
+    x*, y*, z*: cint         # event coordinates (character-cell)
+    bstate*: mmask_t         # button state bits
   
   #not ncurses but used to make things easier
   ErrCode* = distinct cint ## Returns ERR upon failure or OK on success.
@@ -85,7 +83,6 @@ template NCURSES_BITS(mask, shift: untyped): untyped =
   (NCURSES_CAST(chtype, (mask)) shl ((shift) + NCURSES_ATTR_SHIFT))
 
 #color: color manipulation routines
-#https://invisible-island.net/ncurses/man/curs_color.3x.html
 const
   COLOR_BLACK*   = 0
   COLOR_RED*     = 1
@@ -97,10 +94,10 @@ const
   COLOR_WHITE*   = 7
 var
   COLORS* {.importc: "COLORS", dynlib: libncurses.}: cint
-    ## is initialized by start_color to the maximum number of colors thfe
+    ## Initialized by start_color to the maximum number of colors thfe
     ## terminal can support.
   COLOR_PAIRS* {.importc: "COLOR_PAIRS", dynlib: libncurses.}: cint
-    ## is initialized by start_color to the maximum number of color pairs the
+    ## Initialized by start_color to the maximum number of color pairs the
     ## terminal can support.
 template COLOR_PAIR*(n: untyped): untyped = NCURSES_BITS((n), 0'i64)
 template PAIR_NUMBER*(a: untyped): untyped =
@@ -148,7 +145,7 @@ proc wadd_wch*(win: PWindow, wch: ptr cchar_t): ErrCode {.cdecl, importc, discar
 proc mvadd_wch*(y, x: cint, wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvwadd_wch*(win: PWindow, y, x: cint, wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc echo_wchar*(wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
-proc wech_wchar*(win: PWindow, wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+proc wecho_wchar*(win: PWindow, wch: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #add_wchstr: Adding an array of complex characters to a window
 proc add_wchstr*(wchstr: ptr cchar_t): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -211,7 +208,8 @@ proc mvaddnstr*(y, x: cint, str: cstring, n: cint): ErrCode {.cdecl, importc, di
 proc mvwaddstr*(win: PWindow, y, x: cint, str: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvwaddnstr*(win: PWindow, y, x: cint, str: cstring, n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
-#addwstr: Adding a string of wide characters to a window (WideCString)
+#addwstr: Adding a string of wide characters to a window (WideCString) ## Not used?
+#[
 proc addwstr(wstr: WideCString): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc addnwstr(wstr: WideCString, n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc waddwstr(win: PWindow, wstr: WideCString): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -220,6 +218,7 @@ proc mvaddwstr(y, x: cint, win: PWindow, wstr: WideCString): ErrCode {.cdecl, im
 proc mvaddnwstr(y, x: cint, win: PWindow, wstr: WideCString, n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvwaddwstr(win: PWindow, y, x: cint, wstr: WideCString): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvwaddnwstr(win: PWindow, y, x: cint, wstr: WideCString, n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+]#
 
 #new_pair: Color-pair functions
 proc alloc_pair*(fg, bg: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -237,8 +236,8 @@ const
   A_ATTRIBUTES*  = NCURSES_BITS(not (u1 - u1),  0)
   A_CHAR_TEXT*   = (NCURSES_BITS(u1, 0) - u1.chtype)
   A_COLOR*       = NCURSES_BITS((u1 shl 8) - u1, 0)
-  A_STANDOUT*    = NCURSES_BITS(u1, 8)
-  A_UNDERLINE*   = NCURSES_BITS(u1, 9)
+  A_STANDOUT*    = NCURSES_BITS(u1,  8)
+  A_UNDERLINE*   = NCURSES_BITS(u1,  9)
   A_REVERSE*     = NCURSES_BITS(u1, 10)
   A_BLINK*       = NCURSES_BITS(u1, 11)
   A_DIM*         = NCURSES_BITS(u1, 12)
@@ -286,7 +285,7 @@ proc mvchgat*(y, x: cint, n: cint, attr: attr_t, pair: cshort, opts: pointer): E
 proc mvwchgat*(win: PWindow, y, x: cint, n: cint, attr: attr_t, pair: cshort, opts: pointer): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc color_set*(pair: cshort, opts: pointer): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc wcolor_set*(win: PWindow, pair: cshort, opts: pointer): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
-proc standend(): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+#proc standend(): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.} ## Not used?
 proc wstandend*(win: PWindow): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc standout*(): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc wstandout*(win: PWindow): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -422,9 +421,9 @@ proc setsyx*(y,x: cint): void {.cdecl, importc, discardable, dynlib: libncurses.
 proc ripoffline*(line: cint, init: proc(win: PWindow, cols: cint): cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc curs_set*(visibility: cint): cint {.cdecl, importc, discardable, dynlib: libncurses.}
 proc napms*(ms: cint): cint {.cdecl, importc, discardable, dynlib: libncurses.}
-    ## Used to sleep for the specified milliseconds.
-    ## @Params: 'milliseconds' the number of milliseconds to sleep for.
-    ## @Returns: ERR on failure and OK upon successful completion.
+  ## Used to sleep for the specified milliseconds.
+  ## @Params: 'milliseconds' the number of milliseconds to sleep for.
+  ## @Returns: ERR on failure and OK upon successful completion.
 
 #extend: misc extensions
 proc curses_version*(): cstring {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -712,9 +711,9 @@ proc mvwins_wch*(win: PWindow; y,x: cint; wch: ptr cchar_t): ErrCode {.cdecl, im
 
 #insch: insert a character before cursor in a window
 proc insch*(ch: chtype): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
-    ## Inserts a character before the cursor in the stdscr.
-    ## @Param: 'character' the character to insert.
-    ## @Returns: ERR on failure and OK upon successful completion.
+  ## Inserts a character before the cursor in the stdscr.
+  ## @Param: 'character' the character to insert.
+  ## @Returns: ERR on failure and OK upon successful completion.
 proc winsch*(win: PWindow; ch: chtype): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvinsch*(y,x: cint; ch: chtype): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc mvwinsch*(win: PWindow; y,x: cint; ch: chtype): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -730,7 +729,6 @@ proc mvwinsstr*(win: Pwindow; y,x: cint; str: cstring): ErrCode {.cdecl, importc
 proc mvwinsnstr*(win: Pwindow; y,x: cint; str: cstring; n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #opaque: window properties
-#https://invisible-island.net/ncurses/man/curs_opaque.3x.html
 proc is_cleared*(win: PWindow): bool {.cdecl, importc, discardable, dynlib: libncurses.}
   ## returns the value set in clearok
 proc is_idcok*(win: PWindow): bool {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -766,7 +764,6 @@ proc wgetscrreg*(win: PWindow; top, bottom: cint): cint {.cdecl, importc, discar
   ## wsetscrreg
 
 #touch: refresh control routines
-#https://invisible-island.net/ncurses/man/curs_touch.3x.html
 proc touchwin*(win: PWindow): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Throws away all optimization information about which parts of the window
   ## have been touched, by pretending that the entire window has been drawn on.
@@ -790,7 +787,6 @@ proc is_linetouched*(win: PWindow; line: cint): bool {.cdecl, importc, discardab
   ## for the given window.
 
 #resizeterm: change the curses terminal size
-#https://invisible-island.net/ncurses/man/resizeterm.3x.html
 proc is_term_resized*(lines, columns: cint): bool {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Checks if the resize_term function would modify the window structures.
   ## returns TRUE if the windows would be modified, and FALSE otherwise.
@@ -806,14 +802,12 @@ proc resize_term_ext*(lines, columns: cint): ErrCode {.cdecl, discardable, dynli
   ## with the application.
 
 #key_defined: check if a keycode is defined
-#https://invisible-island.net/ncurses/man/key_defined.3x.html
 proc key_defined*(definition: cstring): cint {.cdecl, importc, discardable, dynlib: libncurses.}
   ## If the string is bound to a keycode, its value (greater than zero) is
   ## returned. If no keycode is bound, zero is returned. If the string
   ## conflicts with longer strings which are bound to keys, -1 is returned.
 
 #keybound: return definition of keycode
-#https://invisible-island.net/ncurses/man/keybound.3x.html
 proc keybound*(keycode, count: cint): cstring {.cdecl, importc, discardable, dynlib: libncurses.}
   ## The keycode parameter must be greater than zero, else NULL is returned.
   ## If it does not correspond to a defined key, then NULL is returned. The
@@ -822,19 +816,18 @@ proc keybound*(keycode, count: cint): cstring {.cdecl, importc, discardable, dyn
   ## returns a string which must be freed by the caller.
 
 #keyok: enable or disable a keycode
-#https://invisible-island.net/ncurses/man/keyok.3x.html
-proc keyok(keycode: cint; enable: bool): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+#[
+proc keyok(keycode: cint; enable: bool): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.} ## Not used?
   ## The keycode must be greater than zero, else ERR is returned. If it
   ## does not correspond to a defined key, then ERR is returned. If the
   ## enable parameter is true, then the key must have been disabled, and
   ## vice versa. Otherwise, the function returns OK.
+]#
 
 #mcprint: ship binary data to printer
-#https://invisible-island.net/ncurses/man/curs_print.3x.html
 proc mcprint*(data: cstring; len: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #move: move window cursor
-#https://invisible-island.net/ncurses/man/curs_move.3x.html
 proc move*(y, x: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Moves the cursor of stdscr to the specified coordinates.
   ## @Param: 'y' the line to move the cursor to.
@@ -843,7 +836,6 @@ proc move*(y, x: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurse
 proc wmove*(win: PWindow; y,x: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #printw: print formatted output in windows
-#https://invisible-island.net/ncurses/man/curs_printw.3x.html
 proc printw*(fmt: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses, varargs.}
   ## Prints out a formatted string to the stdscr.
   ## @Param: 'formattedString' the string with formatting to be output to stdscr.
@@ -865,7 +857,6 @@ proc mvwprintw*(win: PWindow; y,x: cint; fmt: cstring): ErrCode {.cdecl, importc
 proc vw_printw*(win: PWindow; fmt: cstring; varglist: varargs[cstring]): ErrCode {.cdecl, importc, discardable, dynlib: libncurses}
 
 #scanw: convert formatted input from a window
-#https://invisible-island.net/ncurses/man/curs_scanw.3x.html
 proc scanw*(fmt: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses, varargs.}
   ## Converts formatted input from the stdscr.
   ## @Param: 'formattedInput' Contains the fields for the input to be mapped to.
@@ -876,7 +867,6 @@ proc mvwscanw*(win: PWindow; y,x: cint; fmt: cstring): ErrCode {.cdecl, importc,
 proc vw_scanw*(win: PWindow; fmt: cstring; varglist: varargs[cstring]): ErrCode {.cdecl, importc, discardable, dynlib: libncurses, varargs,.}
 
 #pad: create and display pads
-#https://invisible-island.net/ncurses/man/curs_pad.3x.html
 proc newpad*(nlines, ncols: cint): PWindow {.cdecl, importc, discardable, dynlib: libncurses.}
 proc subpad*(orig: PWindow; lines, columns, begin_y, begin_x: cint): PWindow {.cdecl, importc, discardable, dynlib: libncurses.}
 proc prefresh*(pad: PWindow;
@@ -893,25 +883,29 @@ proc pechochar*(pad: PWindow; ch: chtype): ErrCode {.cdecl, importc, discardable
 proc pecho_wchar*(pad: PWindow; wch: WideCString): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #scr_dump: read (write) a screen from (to) a file
-#https://invisible-island.net/ncurses/man/curs_scr_dump.3x.html
 proc scr_dump*(filename: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc scr_restore*(filename: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc scr_init*(filename: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc scr_set*(filename: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #scroll: scroll a window
-#https://invisible-island.net/ncurses/man/curs_scroll.3x.html
 proc scroll*(win: PWindow): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc scrl*(n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc wscrl*(win: PWindow; n: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #termcap: direct interface to the terminfo capability database
-#https://invisible-island.net/ncurses/man/curs_termcap.3x.html
 var
   PC* {.importc, dynlib: libncurses.}: cchar
+    ## Set by tgetent to the terminfo entry's pad_char value.
+    ## Used in the tdelay_output function.
   UP* {.importc, dynlib: libncurses.}: ptr cchar
+    ## Set by tgetent to the terminfo entry's cursor_up value.
+    ## Not used by ncurses.
   BC* {.importc, dynlib: libncurses.}: ptr cchar
+    ## Set by tgetent to the terminfo entry's backspace_if_not_bs value.
+    ## Used in the tgoto() emulation.
   ospeed* {.importc, dynlib: libncurses.}: cshort
+    ## Set by ncurses in a system-specific coding to reflect the terminal speed.
 proc tgetent*(np, name: cstring): cint {.cdecl, importc, discardable, dynlib: libncurses.}
 proc tgetflag*(id: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 proc tgetnum*(id: cstring): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -920,14 +914,12 @@ proc tgoto*(cap: cstring; col, row: cint): cstring {.cdecl, importc, discardable
 proc tputs*(str: cstring; affcnt: cint; putc: ptr proc(ch: cint): cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #legacy_coding: override locale-encoding checks
-#https://invisible-island.net/ncurses/man/legacy_coding.3x.html
 proc use_legacy_coding*(level: cint): cint {.cdecl, importc, discardable, dynlib: libncurses.}
   ## If  the  screen has not been initialized, or the level parameter is out
   ## of range, the function returns ERR. Otherwise, it returns the previous
   ## level: 0, 1 or 2.
 
 #wresize: resize a curses window
-#https://invisible-island.net/ncurses/man/wresize.3x.html
 proc wresize*(win: PWindow; line, column: cint): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 # mouse interface
@@ -984,99 +976,99 @@ const
   BUTTON_ALT*   = NCURSES_MOUSE_MASK(6, 4)
   
   # keys
-  KEY_CODE_YES*  = 0o400           # A wchar_t contains a key code
-  KEY_MIN*       = 0o401           # Minimum curses key
-  KEY_BREAK*     = 0o401           # Break key (unreliable)
-  KEY_SRESET*    = 0o530           # Soft (partial) reset (unreliable)
-  KEY_RESET*     = 0o531           # Reset or hard reset (unreliable)
+  KEY_CODE_YES*  = 0o400     ## A wchar_t contains a key code
+  KEY_MIN*       = 0o401     ## Minimum curses key
+  KEY_BREAK*     = 0o401     ## Break key (unreliable)
+  KEY_SRESET*    = 0o530     ## Soft (partial) reset (unreliable)
+  KEY_RESET*     = 0o531     ## Reset or hard reset (unreliable)
 
-  KEY_DOWN*      = 0o402           # down-arrow key
-  KEY_UP*        = 0o403           # up-arrow key
-  KEY_LEFT*      = 0o404           # left-arrow key
-  KEY_RIGHT*     = 0o405           # right-arrow key
-  KEY_HOME*      = 0o406           # home key
-  KEY_BACKSPACE* = 0o407           # backspace key
-  KEY_F0*        = 0o410           # Function keys.  Space for 64
-  KEY_DL*        = 0o510           # delete-line key
-  KEY_IL*        = 0o511           # insert-line key
-  KEY_DC*        = 0o512           # delete-character key
-  KEY_IC*        = 0o513           # insert-character key
-  KEY_EIC*       = 0o514           # sent by rmir or smir in insert mode
-  KEY_CLEAR*     = 0o515           # clear-screen or erase key
-  KEY_EOS*       = 0o516           # clear-to-end-of-screen key
-  KEY_EOL*       = 0o517           # clear-to-end-of-line key
-  KEY_SF*        = 0o520           # scroll-forward key
-  KEY_SR*        = 0o521           # scroll-backward key
-  KEY_NPAGE*     = 0o522           # next-page key
-  KEY_PPAGE*     = 0o523           # previous-page key
-  KEY_STAB*      = 0o524           # set-tab key
-  KEY_CTAB*      = 0o525           # clear-tab key
-  KEY_CATAB*     = 0o526           # clear-all-tabs key
-  KEY_ENTER*     = 0o527           # enter/send key
-  KEY_PRINT*     = 0o532           # print key
-  KEY_LL*        = 0o533           # lower-left key (home down)
-  KEY_A1*        = 0o534           # upper left of keypad
-  KEY_A3*        = 0o535           # upper right of keypad
-  KEY_B2*        = 0o536           # center of keypad
-  KEY_C1*        = 0o537           # lower left of keypad
-  KEY_C3*        = 0o540           # lower right of keypad
-  KEY_BTAB*      = 0o541           # back-tab key
-  KEY_BEG*       = 0o542           # begin key
-  KEY_CANCEL*    = 0o543           # cancel key
-  KEY_CLOSE*     = 0o544           # close key
-  KEY_COMMAND*   = 0o545           # command key
-  KEY_COPY*      = 0o546           # copy key
-  KEY_CREATE*    = 0o547           # create key
-  KEY_END*       = 0o550           # end key
-  KEY_EXIT*      = 0o551           # exit key
-  KEY_FIND*      = 0o552           # find key
-  KEY_HELP*      = 0o553           # help key
-  KEY_MARK*      = 0o554           # mark key
-  KEY_MESSAGE*   = 0o555           # message key
-  KEY_MOVE*      = 0o556           # move key
-  KEY_NEXT*      = 0o557           # next key
-  KEY_OPEN*      = 0o560           # open key
-  KEY_OPTIONS*   = 0o561           # options key
-  KEY_PREVIOUS*  = 0o562           # previous key
-  KEY_REDO*      = 0o563           # redo key
-  KEY_REFERENCE* = 0o564           # reference key
-  KEY_REFRESH*   = 0o565           # refresh key
-  KEY_REPLACE*   = 0o566           # replace key
-  KEY_RESTART*   = 0o567           # restart key
-  KEY_RESUME*    = 0o570           # resume key
-  KEY_SAVE*      = 0o571           # save key
-  KEY_SBEG*      = 0o572           # shifted begin key
-  KEY_SCANCEL*   = 0o573           # shifted cancel key
-  KEY_SCOMMAND*  = 0o574           # shifted command key
-  KEY_SCOPY*     = 0o575           # shifted copy key
-  KEY_SCREATE*   = 0o576           # shifted create key
-  KEY_SDC*       = 0o577           # shifted delete-character key
-  KEY_SDL*       = 0o600           # shifted delete-line key
-  KEY_SELECT*    = 0o601           # select key
-  KEY_SEND*      = 0o602           # shifted end key
-  KEY_SEOL*      = 0o603           # shifted clear-to-end-of-line key
-  KEY_SEXIT*     = 0o604           # shifted exit key
-  KEY_SFIND*     = 0o605           # shifted find key
-  KEY_SHELP*     = 0o606           # shifted help key
-  KEY_SHOME*     = 0o607           # shifted home key
-  KEY_SIC*       = 0o610           # shifted insert-character key
-  KEY_SLEFT*     = 0o611           # shifted left-arrow key
-  KEY_SMESSAGE*  = 0o612           # shifted message key
-  KEY_SMOVE*     = 0o613           # shifted move key
-  KEY_SNEXT*     = 0o614           # shifted next key
-  KEY_SOPTIONS*  = 0o615           # shifted options key
-  KEY_SPREVIOUS* = 0o616           # shifted previous key
-  KEY_SPRINT*    = 0o617           # shifted print key
-  KEY_SREDO*     = 0o620           # shifted redo key
-  KEY_SREPLACE*  = 0o621           # shifted replace key
-  KEY_SRIGHT*    = 0o622           # shifted right-arrow key
-  KEY_SRSUME*    = 0o623           # shifted resume key
-  KEY_SSAVE*     = 0o624           # shifted save key
-  KEY_SSUSPEND*  = 0o625           # shifted suspend key
-  KEY_SUNDO*     = 0o626           # shifted undo key
-  KEY_SUSPEND*   = 0o627           # suspend key
-  KEY_UNDO*      = 0o630           # undo key
-  KEY_MOUSE*     = 0o631           # Mouse event has occurred
-  KEY_RESIZE*    = 0o632           # Terminal resize event
-  KEY_EVENT*     = 0o633           # We were interrupted by an event
+  KEY_DOWN*      = 0o402     ## down-arrow key
+  KEY_UP*        = 0o403     ## up-arrow key
+  KEY_LEFT*      = 0o404     ## left-arrow key
+  KEY_RIGHT*     = 0o405     ## right-arrow key
+  KEY_HOME*      = 0o406     ## home key
+  KEY_BACKSPACE* = 0o407     ## backspace key
+  KEY_F0*        = 0o410     ## Function keys.  Space for 64
+  KEY_DL*        = 0o510     ## delete-line key
+  KEY_IL*        = 0o511     ## insert-line key
+  KEY_DC*        = 0o512     ## delete-character key
+  KEY_IC*        = 0o513     ## insert-character key
+  KEY_EIC*       = 0o514     ## sent by rmir or smir in insert mode
+  KEY_CLEAR*     = 0o515     ## clear-screen or erase key
+  KEY_EOS*       = 0o516     ## clear-to-end-of-screen key
+  KEY_EOL*       = 0o517     ## clear-to-end-of-line key
+  KEY_SF*        = 0o520     ## scroll-forward key
+  KEY_SR*        = 0o521     ## scroll-backward key
+  KEY_NPAGE*     = 0o522     ## next-page key
+  KEY_PPAGE*     = 0o523     ## previous-page key
+  KEY_STAB*      = 0o524     ## set-tab key
+  KEY_CTAB*      = 0o525     ## clear-tab key
+  KEY_CATAB*     = 0o526     ## clear-all-tabs key
+  KEY_ENTER*     = 0o527     ## enter/send key
+  KEY_PRINT*     = 0o532     ## print key
+  KEY_LL*        = 0o533     ## lower-left key (home down)
+  KEY_A1*        = 0o534     ## upper left of keypad
+  KEY_A3*        = 0o535     ## upper right of keypad
+  KEY_B2*        = 0o536     ## center of keypad
+  KEY_C1*        = 0o537     ## lower left of keypad
+  KEY_C3*        = 0o540     ## lower right of keypad
+  KEY_BTAB*      = 0o541     ## back-tab key
+  KEY_BEG*       = 0o542     ## begin key
+  KEY_CANCEL*    = 0o543     ## cancel key
+  KEY_CLOSE*     = 0o544     ## close key
+  KEY_COMMAND*   = 0o545     ## command key
+  KEY_COPY*      = 0o546     ## copy key
+  KEY_CREATE*    = 0o547     ## create key
+  KEY_END*       = 0o550     ## end key
+  KEY_EXIT*      = 0o551     ## exit key
+  KEY_FIND*      = 0o552     ## find key
+  KEY_HELP*      = 0o553     ## help key
+  KEY_MARK*      = 0o554     ## mark key
+  KEY_MESSAGE*   = 0o555     ## message key
+  KEY_MOVE*      = 0o556     ## move key
+  KEY_NEXT*      = 0o557     ## next key
+  KEY_OPEN*      = 0o560     ## open key
+  KEY_OPTIONS*   = 0o561     ## options key
+  KEY_PREVIOUS*  = 0o562     ## previous key
+  KEY_REDO*      = 0o563     ## redo key
+  KEY_REFERENCE* = 0o564     ## reference key
+  KEY_REFRESH*   = 0o565     ## refresh key
+  KEY_REPLACE*   = 0o566     ## replace key
+  KEY_RESTART*   = 0o567     ## restart key
+  KEY_RESUME*    = 0o570     ## resume key
+  KEY_SAVE*      = 0o571     ## save key
+  KEY_SBEG*      = 0o572     ## shifted begin key
+  KEY_SCANCEL*   = 0o573     ## shifted cancel key
+  KEY_SCOMMAND*  = 0o574     ## shifted command key
+  KEY_SCOPY*     = 0o575     ## shifted copy key
+  KEY_SCREATE*   = 0o576     ## shifted create key
+  KEY_SDC*       = 0o577     ## shifted delete-character key
+  KEY_SDL*       = 0o600     ## shifted delete-line key
+  KEY_SELECT*    = 0o601     ## select key
+  KEY_SEND*      = 0o602     ## shifted end key
+  KEY_SEOL*      = 0o603     ## shifted clear-to-end-of-line key
+  KEY_SEXIT*     = 0o604     ## shifted exit key
+  KEY_SFIND*     = 0o605     ## shifted find key
+  KEY_SHELP*     = 0o606     ## shifted help key
+  KEY_SHOME*     = 0o607     ## shifted home key
+  KEY_SIC*       = 0o610     ## shifted insert-character key
+  KEY_SLEFT*     = 0o611     ## shifted left-arrow key
+  KEY_SMESSAGE*  = 0o612     ## shifted message key
+  KEY_SMOVE*     = 0o613     ## shifted move key
+  KEY_SNEXT*     = 0o614     ## shifted next key
+  KEY_SOPTIONS*  = 0o615     ## shifted options key
+  KEY_SPREVIOUS* = 0o616     ## shifted previous key
+  KEY_SPRINT*    = 0o617     ## shifted print key
+  KEY_SREDO*     = 0o620     ## shifted redo key
+  KEY_SREPLACE*  = 0o621     ## shifted replace key
+  KEY_SRIGHT*    = 0o622     ## shifted right-arrow key
+  KEY_SRSUME*    = 0o623     ## shifted resume key
+  KEY_SSAVE*     = 0o624     ## shifted save key
+  KEY_SSUSPEND*  = 0o625     ## shifted suspend key
+  KEY_SUNDO*     = 0o626     ## shifted undo key
+  KEY_SUSPEND*   = 0o627     ## suspend key
+  KEY_UNDO*      = 0o630     ## undo key
+  KEY_MOUSE*     = 0o631     ## Mouse event has occurred
+  KEY_RESIZE*    = 0o632     ## Terminal resize event
+  KEY_EVENT*     = 0o633     ## We were interrupted by an event
 template KEY_F*(n: untyped): untyped= (KEY_F0+(n)) ## Value of function key n
