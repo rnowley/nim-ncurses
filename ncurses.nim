@@ -603,10 +603,10 @@ proc getcchar*(wcval: ptr cchar_t, wch: WideCString, attrs: ptr attr_t, color_pa
 proc setcchar*(wcval: ptr cchar_t, wch: WideCString, attrs: attr_t, color_pair: cshort, opts: pointer): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #getch: get (or push back) characters from the terminal keyboard
-proc getch*(): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+proc getch*(): cchar {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Read a character from the stdscr window.
   ## @Returns: ERR on failure and OK upon successful completion.
-proc wgetch*(win: PWindow): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
+proc wgetch*(win: PWindow): cchar {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Read a character from the specified window.
   ## @Param: 'sourceWindow' the window to read a character from.
   ## @Returns: ERR on failure and OK upon successful completion.
@@ -916,7 +916,7 @@ proc tputs*(str: cstring; affcnt: cint; putc: ptr proc(ch: cint): cint): ErrCode
 
 #legacy_coding: override locale-encoding checks
 proc use_legacy_coding*(level: cint): cint {.cdecl, importc, discardable, dynlib: libncurses.}
-  ## If  the  screen has not been initialized, or the level parameter is out
+  ## If the screen has not been initialized, or the level parameter is out
   ## of range, the function returns ERR. Otherwise, it returns the previous
   ## level: 0, 1 or 2.
 
