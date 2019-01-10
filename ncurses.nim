@@ -70,7 +70,7 @@ type
     bstate*: mmask_t         # button state bits
   
   #not ncurses but used to make things easier
-  ErrCode* = distinct cint ## Returns ERR upon failure or OK on success.
+  ErrCode* = distinct cint ## Error Code. Returns ERR (-1) upon failure or OK (0) on success.
   PWindow* = ptr Window
   PScreen* = ptr Screen
 
@@ -101,7 +101,7 @@ var
     ## terminal can support.
 template COLOR_PAIR*(n: untyped): untyped = NCURSES_BITS((n), 0'i64)
 template PAIR_NUMBER*(a: untyped): untyped =
-  (NCURSES_CAST(int, ((NCURSES_CAST(cuint, (a)) and A_COLOR) shr
+  (NCURSES_CAST(cint, ((NCURSES_CAST(cuint, (a)) and A_COLOR) shr
     NCURSES_ATTR_SHIFT)))
 
 proc start_color*(): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
@@ -297,7 +297,7 @@ proc erasewchar*(ch: WideCString) {.cdecl, importc, discardable, dynlib: libncur
 proc has_ic*(): bool {.cdecl, importc, discardable, dynlib: libncurses.}
 proc has_il*(): bool {.cdecl, importc, discardable, dynlib: libncurses.}
 proc killchar*(): cchar {.cdecl, importc, discardable, dynlib: libncurses.}
-proc killwchar*(ch: WideCString): char {.cdecl, importc, discardable, dynlib: libncurses.}
+proc killwchar*(ch: WideCString): cchar {.cdecl, importc, discardable, dynlib: libncurses.}
 proc longname*(): cstring {.cdecl, importc, discardable, dynlib: libncurses.}
 proc term_attrs*(): attr_t {.cdecl, importc, discardable, dynlib: libncurses.}
 proc term_attrs_ch*(): chtype {.cdecl, importc: "termattrs", discardable, dynlib: libncurses.} ## Previously termattrs
