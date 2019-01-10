@@ -57,6 +57,7 @@ type
     yoffset: cshort          # real begy is _begy + _yoffset
     bkgrnd: cchar_t          # current background char/attribute pair
     color: cint              # current color-pair for non-space character
+  window {.deprecated: "Use Pwindow instead.".} = Window
 
   pdat = object ## pad data
     pad_y*,      pad_x*:     cshort
