@@ -20,16 +20,16 @@ type
   Terminal* = object
   Window* = object ## Holds window data
     cury, curx: cshort       # current cursor position
-    
+
     # window location and size
     maxy, maxx: cshort       # maximums of x and y, NOT window size
     begy, begx: cshort       # screen coords of upper-left-hand corner
     flags: cshort            # window state flags
-    
+
     # attribute tracking
     attrs: attr_t            # current attribute for non-space character
     bkgd: chtype             # current background char/attribute pair
-    
+
     # option values set by user
     notimeout: bool          # no time out on function-key entry?
     clear: bool              # consider all data in the window invalid?
@@ -41,23 +41,23 @@ type
     sync: bool               # window in sync mode?
     use_keypad: bool         # process function keys into KEY_ symbols?
     delay: cint              # 0 = nodelay, <0 = blocking, >0 = delay
-    
+
     line: ptr ldat           # the actual line data
-    
+
     # global screen state
     regtop: cshort           # top line of scrolling region
     regbottom: cshort        # bottom line of scrolling region
-    
+
     # these are used only if this is a sub-window
     pary, parx: cint         # y, x coordinates of this window in parent
     parent: PWindow          # pointer to parent if a sub-window
-    
+
     # these are used only if this is a pad
     pad: pdat
     yoffset: cshort          # real begy is _begy + _yoffset
     bkgrnd: cchar_t          # current background char/attribute pair
     color: cint              # current color-pair for non-space character
-  window {.deprecated: "Use Pwindow instead.".} = Window
+  window* {.deprecated: "Use Pwindow instead.".} = Window
 
   pdat = object ## pad data
     pad_y*,      pad_x*:     cshort
@@ -69,15 +69,15 @@ type
     id*: cshort              # ID to distinguish multiple devices
     x*, y*, z*: cint         # event coordinates (character-cell)
     bstate*: mmask_t         # button state bits
-  
+
   #not ncurses but used to make things easier
-  ErrCode* = distinct cint ## Error Code. Returns ERR (-1) upon failure or OK (0) on success.
+  ErrCode* = cint ## Error Code. Returns ERR (-1) upon failure or OK (0) on success.
   PWindow* = ptr Window
   PScreen* = ptr Screen
 
 const
-  ERR* = (-1)
-  OK*  = (0)
+  ERR*: ErrCode = (-1)
+  OK*:  ErrCode = (0)
   NCURSES_ATTR_SHIFT = 8
 template NCURSES_CAST(`type`, value: untyped): untyped = (`type`)(value)
 template NCURSES_BITS(mask, shift: untyped): untyped =
@@ -975,7 +975,7 @@ const
   BUTTON_CTRL*  = NCURSES_MOUSE_MASK(6, 1)
   BUTTON_SHIFT* = NCURSES_MOUSE_MASK(6, 2)
   BUTTON_ALT*   = NCURSES_MOUSE_MASK(6, 4)
-  
+
   # keys
   KEY_CODE_YES*  = 0o400     ## A wchar_t contains a key code
   KEY_MIN*       = 0o401     ## Minimum curses key
