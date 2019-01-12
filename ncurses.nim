@@ -57,7 +57,7 @@ type
     yoffset: cshort          # real begy is _begy + _yoffset
     bkgrnd: cchar_t          # current background char/attribute pair
     color: cint              # current color-pair for non-space character
-  window* {.deprecated: "Use Pwindow instead.".} = Window
+  window* {.deprecated: "Use PWindow instead".} = Window
 
   pdat = object ## pad data
     pad_y*,      pad_x*:     cshort
@@ -603,10 +603,10 @@ proc getcchar*(wcval: ptr cchar_t, wch: WideCString, attrs: ptr attr_t, color_pa
 proc setcchar*(wcval: ptr cchar_t, wch: WideCString, attrs: attr_t, color_pair: cshort, opts: pointer): ErrCode {.cdecl, importc, discardable, dynlib: libncurses.}
 
 #getch: get (or push back) characters from the terminal keyboard
-proc getch*(): cchar {.cdecl, importc, discardable, dynlib: libncurses.}
+proc getch*(): cint {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Read a character from the stdscr window.
   ## @Returns: ERR on failure and OK upon successful completion.
-proc wgetch*(win: PWindow): cchar {.cdecl, importc, discardable, dynlib: libncurses.}
+proc wgetch*(win: PWindow): cint {.cdecl, importc, discardable, dynlib: libncurses.}
   ## Read a character from the specified window.
   ## @Param: 'sourceWindow' the window to read a character from.
   ## @Returns: ERR on failure and OK upon successful completion.
