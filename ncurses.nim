@@ -1,10 +1,9 @@
-{.deadCodeElim: on.}
 when defined(windows):
   const libncurses* = "libncurses.dll"
 elif defined(macosx):
   const libncurses* = "libncurses.dylib"
 else:
-  const libncurses* = "libncursesw.so"
+  const libncurses* = "libncursesw.so(.6|.5|)"
 
 type
   chtype*  = cuint ## Holds a character and possibly an attribute
