@@ -1,9 +1,8 @@
-[Package]
-name          = "ncurses"
-version       = "0.1.0"
+# Package
+version       = "0.1.1"
 author        = "Raymond Nowley"
 description   = "A wrapper for NCurses"
 license       = "MIT"
 
-[Deps]
-Requires: "nim >= 0.10.0"
+# Dependencies
+requires: "nim >= 0.19.0"
