@@ -7,7 +7,7 @@ else:
   const libncurses* = "libncursesw.so"
 
 type
-  chtype*  = cuint ## Holds a character and possibly an attribute
+  chtype*  = cint ## Holds a character and possibly an attribute
   attr_t*  = chtype ## Attribute type
 
   cchar_t* = object ## Complex char
