@@ -48,17 +48,12 @@ while fp.endOfFile() == false:
         printw("%c%c", prev, ch)
         attroff(A_BOLD)
         block_comm = false
-
     # line comment
     elif block_comm == false and ch == '#' and (prev == '\r' or prev == '\n' or prev == '\0' or prev == ' '):
         attron(A_BOLD)
-        getyx(pwin, y, x)
-        move(y, x)
         printw("%c", ch)
     elif block_comm == false and ch == '\n' or ch == '\r':
         attroff(A_BOLD)
-        getyx(pwin, y, x)
-        move(y, x)
         printw("%c", ch)
     else:
         printw("%c", ch)
