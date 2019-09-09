@@ -35,6 +35,7 @@ proc main() =
     getmaxyx(stdscr, y, x)
 
     start_color()
+    if can_change_color(): init_color(COLOR_RED, 700, 500, 500)
     init_pair(1, COLOR_RED, COLOR_BLACK)
 
     attron(COLOR_PAIR(1))
