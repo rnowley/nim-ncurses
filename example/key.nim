@@ -58,7 +58,7 @@ proc main() =
         c = wgetch(menu_win)
         case c
         of KEY_UP:
-            if highlight == 1: # wrap
+            if highlight == 1: # wrap around
                 highlight = n_choices
             else:
                 highlight -= 1
